@@ -1,19 +1,31 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { data: session, isPending } = authClient.useSession()
+  const router = useRouter();
+
+  // Redirect to dashboard if user is already logged in
+  useEffect(() => { 
+    if (!isPending && session) {
+      router.push("/dashboard");
+    }
+
+  }, [session, isPending, router]);
+  
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
       setErrorMessage(""); 
 
       const { error } = await authClient.signIn.social({
-        provider: "google",
+          provider: "google",
       });
 
       if (error) {
@@ -76,7 +88,7 @@ const LoginPage = () => {
             <button
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="flex w-full items-center justify-center rounded-lg border   px-4 py-3 text-lg tracking-wide font-medium  shadow-sm  focus:outline-none focus:ring-2 border-zinc-700 cursor-pointer hover:bg-zinc-800"
+              className="flex w-full items-center justify-center rounded-lg border   px-4 py-3 text-lg tracking-wide font-medium gap-3  shadow-sm  focus:outline-none focus:ring-2 border-zinc-700 cursor-pointer hover:bg-zinc-800"
             >
               {isLoading ? (
                 <svg
