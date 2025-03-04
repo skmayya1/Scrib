@@ -1,15 +1,58 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import Stealth from "puppeteer-extra-plugin-stealth";
 
-export async function DriverInit(meetingUrl = "https://meet.google.com/xqp-btzf-bkk") {
+//@ts-expect-error
+puppeteer.use(Stealth());
+
+export async function DriverInit({
+  meetingUrl,
+  accessToken,
+  name,
+}: {
+  meetingUrl: string;
+  accessToken: string;
+  name: string;
+}) {
   let browser;
   let page;
   try {
     browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      headless: false,
+      defaultViewport: null,
+      devtools: false,
+      args: [
+        "--window-size=1920,1080",
+        "--window-position=1921,0",
+        "--autoplay-policy=no-user-gesture-required",
+        "--enable-automation",
+      ],
+      ignoreDefaultArgs: false,
     });
 
+    const context = browser.defaultBrowserContext();
+
+    await context.overridePermissions(meetingUrl, [
+      "microphone",
+      "camera",
+      "notifications",
+    ]);
+
     page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+    );
+
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, "webdriver", { get: () => false });
+    });
+
+    await page.mouse.move(100, 100);
+    await page.mouse.down();
+    await page.mouse.up();
+
+    await page.setExtraHTTPHeaders({
+      Authorization: `Bearer ${accessToken}`,
+    });
 
     await page.goto(meetingUrl, {
       waitUntil: "networkidle2",
@@ -31,7 +74,6 @@ export async function DriverInit(meetingUrl = "https://meet.google.com/xqp-btzf-
     }
 
     if (InputExists) {
-      const name = "skanda";
       const nameInputSelector = 'input[aria-label="Your name"]';
       try {
         await page.waitForSelector(nameInputSelector, {
