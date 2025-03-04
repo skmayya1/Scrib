@@ -11,11 +11,11 @@ const Page = () => {
     }
     console.log(session);
 
-    
-    
   return (
       <div className='bg-zinc-900 h-screen w-full'>
-          page
+          <button onClick={() => {
+                authClient.signOut()
+          }}>Sign Out</button>
       </div>
   )
 }
