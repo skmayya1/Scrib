@@ -14,14 +14,14 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
   email         String
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  audio         Bytes
+  meet          Meet[]
   sessions      Session[]
   accounts      Account[]
 
@@ -74,3 +74,14 @@ model Verification {
   @@map("verification")
 }
 
+model Meet {
+  id        String    @id @default(cuid())
+  chunk     Bytes
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  createdAt DateTime?
+  updatedAt DateTime?
+
+  @@map("temp_chunks")
+}

@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("Request Headers:", Object.fromEntries(req.headers.entries()));
-
     // Get Authorization header
     const authHeader = req.headers.get("authorization");
 
@@ -14,7 +12,6 @@ export async function POST(req: NextRequest) {
 
     // Extract the token
     const token = authHeader.split(" ")[1];
-    console.log( token);
 
     const data = await req.formData();
     const file = data.get("file") as Blob | null;
@@ -24,34 +21,42 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    console.log("File size:", buffer.length);
 
-    
-    const existingAudio = await prisma.meetingAudio.findUnique({
-      where: {
-        userId: token,
-      },
-    });
+    const meetingId = data.get("meetingId") as string | null;
 
-    if (existingAudio) {
-      // Append new buffer to existing audio
-      const updatedBuffer = Buffer.concat([existingAudio.audio, buffer]);
+    console.log("Meeting ID:", meetingId);
 
-      await prisma.meetingAudio.update({
-        where: { id: existingAudio.id },
-        data: { audio: updatedBuffer },
+    if (!meetingId || meetingId.trim() === "") {
+      await prisma.meet.deleteMany();
+      const Meet = await prisma.meet.create({
+        data: {
+          id: crypto.randomUUID(),
+          chunk: buffer,
+          userId: token,
+        },
       });
-
-      console.log(`Appended ${buffer.length} bytes to meeting `);
-    } else {
-      await prisma.meetingAudio.create({
-        data: { userId: token, meetingId:'1',audio: buffer },
-      });
+      console.log("Meeting ID:", Meet.id);
+      return NextResponse.json({ meetingId: Meet.id }, { status: 200 });
     }
 
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    const existingMeeting = await prisma.meet.findUnique({
+      where: { id: meetingId as string },
+      select: { chunk: true },
+    });
+
+    if (!existingMeeting) {
+      return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+    }
+
+    const updatedBuffer = Buffer.concat([existingMeeting.chunk, buffer]);
+
+     await prisma.meet.update({
+      where: { id: meetingId as string },
+      data: { chunk: updatedBuffer },
+    });
+
+    return NextResponse.json({ meetingId }, { status: 200 });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
