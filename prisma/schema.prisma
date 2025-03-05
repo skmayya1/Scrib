@@ -72,3 +72,9 @@ model Verification {
 
   @@map("verification")
 }
+model MeetingAudio {
+  id         String   @id @default(uuid())
+  meetingId  String   @unique
+  audio      Bytes    // Stores the full buffer
+  createdAt  DateTime @default(now())
+}

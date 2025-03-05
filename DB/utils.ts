@@ -23,12 +23,7 @@ export async function getAccessToken(): Promise<{
             email: email as string
         },
         select: {
-            accounts: {
-                select: {
-                    accessToken: true,
-                    accessTokenExpiresAt: true
-               }
-           }
+           id: true,
         }
     })
     
@@ -36,7 +31,7 @@ export async function getAccessToken(): Promise<{
         throw new Error('No user found')
     }
     return {
-        accessToken: data?.accounts[0].accessToken as string,
-        Expired: new Date(data?.accounts[0].accessTokenExpiresAt as Date) < new Date()
+        accessToken: data.id,
+        Expired: false
     }
 }
