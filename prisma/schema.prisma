@@ -14,13 +14,14 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String
-  email         String    
+  email         String
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
+  audio         Bytes
   sessions      Session[]
   accounts      Account[]
 
@@ -72,9 +73,4 @@ model Verification {
 
   @@map("verification")
 }
-model MeetingAudio {
-  id         String   @id @default(uuid())
-  meetingId  String   @unique
-  audio      Bytes    // Stores the full buffer
-  createdAt  DateTime @default(now())
-}
+
