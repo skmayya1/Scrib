@@ -22,12 +22,34 @@ body {
 }
 
 .MAXWIDTH {
-  max-width: 990px;
+  max-width: 1200px;
   width: 100%;
-  height: 100%;
   margin: 0 auto;
   padding: 10;
   display: flex;
   align-items: center;
   justify-items: center;
+}
+@keyframes slime {
+
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+
+  25% {
+    transform: scaleX(1.2) scaleY(0.8);
+  }
+
+  50% {
+    transform: scaleX(0.9) scaleY(1.1);
+  }
+
+  75% {
+    transform: scaleX(1.1) scaleY(0.9);
+  }
+}
+
+.animate-slime {
+  animation: slime 3s infinite ease-in-out;
 }

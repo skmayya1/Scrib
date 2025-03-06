@@ -5,7 +5,7 @@ const Navbar = () => {
   const {  data: session } = authClient.useSession();
   return (
     <nav className="h-[100px] w-full items-center justify-between">
-      <div className="MAXWIDTH">
+      <div className="MAXWIDTH h-full">
         <div className="flex items-center justify-between w-full ">
           <h1 className="text-2xl font-bold">SCRIB</h1>
         </div>
