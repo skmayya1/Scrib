@@ -5,6 +5,7 @@ import Navbar from "@/Components/Navbar";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { History } from 'lucide-react';
 
 const Page = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -15,7 +16,7 @@ const Page = () => {
   console.log(session);
 
   return (
-    <div className="bg-[#191818] max-h-screen h-screen  w-full">
+    <div className="bg-[#191818] max-h-screen h-screen  w-full overflow-hidden">
       <Navbar />
       <div className="MAXWIDTH h-full flex-col py-20">
         {/*   <Section /> */}
@@ -25,6 +26,12 @@ const Page = () => {
             <div className="h-2 w-6 opacity-70 bg-green-500 rounded-full animate-slime"></div>
             Recording
           </div>
+        </div>
+        <div className="w-full flex items-center text-[13px] text-zinc-400 justify-start mb-4 tracking-wider">
+          <p className="flex items-center gap-2">
+            <History color="gray" size={14}/>
+            Activities
+          </p>
         </div>
         <Section />
       </div>
