@@ -29,7 +29,6 @@ async function getText(meeting: MeetingsProps) {
     return meeting;
   }
   const text = await audioToText(meeting.Audio);
-  console.log("Transcript:", text);
   return {
     ...meeting,
     text,
@@ -49,9 +48,13 @@ interface MeetingsProps {
 const client = new AssemblyAI({
   apiKey: process.env.ASSEMBLYAI_API_KEY as string,
 });
- async function audioToText(audio: Buffer) {
+async function audioToText(audio: Buffer) {
+  console.log("Transcribing audio...", audio);
+
   const transcript = await client.transcripts.transcribe({
     audio: audio,
   });
+  console.log("Transcript:", transcript.text);
+  
   return transcript.text;
 }
