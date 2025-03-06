@@ -1,4 +1,5 @@
 "use client"
+import Navbar from '@/Components/Navbar';
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation';
 import React from 'react'
@@ -13,11 +14,18 @@ const Page = () => {
 
   return (
       <div className='bg-zinc-900 h-screen w-full'>
-          <button onClick={() => {
-                authClient.signOut()
-          }}>Sign Out</button>
+          <Navbar/>
       </div>
   )
 }
 
 export default Page;
+
+
+{
+  /* 
+              <button onClick={() => {
+                authClient.signOut()
+          }}>Sign Out</button>
+    */
+}
