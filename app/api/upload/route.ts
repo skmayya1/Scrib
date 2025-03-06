@@ -1,7 +1,5 @@
 import prisma from "@/DB/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,23 +52,22 @@ export async function POST(req: NextRequest) {
 
     const updatedBuffer = Buffer.concat([existingMeeting.chunk, buffer]);
 
-    await prisma.meet.update({
-      where: { id: meetingId as string },
-      data: { chunk: updatedBuffer },
-    });
-
     console.log("iscopmleted", isCompleted);
 
     // Convert buffer to audio file when completed
     if (isCompleted) {
-      const audioFilePath = path.join("/tmp", `${meetingId}.mp3`);
-
-      fs.writeFileSync(audioFilePath, updatedBuffer);
-
-      console.log(`Audio file saved: ${audioFilePath}`);
-
-      return NextResponse.json({ meetingId, audioFilePath }, { status: 200 });
+      await prisma.meetings.create({
+        data: {
+          Audio: updatedBuffer,
+          userId: token,
+        },
+      });
+      return NextResponse.json({ meetingId,isCompleted }, { status: 200 });
     }
+    await prisma.meet.update({
+      where: { id: meetingId as string },
+      data: { chunk: updatedBuffer },
+    });
 
     return NextResponse.json({ meetingId }, { status: 200 });
   } catch (error) {
