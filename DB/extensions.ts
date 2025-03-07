@@ -7,9 +7,13 @@ interface MeetingsProps {
   id: string;
   userId: string;
   title: string | null;
+  description: string | null;
+  text: string | null;
+  key_takeaways: string[];
+  deadlines: string[];
+  tasks: Task[];
   createdAt: Date | null;
   updatedAt: Date | null;
-  text: string | null;
 }
 
 interface MeetingSummary {
@@ -22,8 +26,8 @@ interface MeetingSummary {
 
 interface Task {
   task: string;
-  assigned_to: string;
-  deadline: string;
+  assigned_to: string | null;
+  deadline: string | null;
 }
 
 const client = new AssemblyAI({
@@ -54,16 +58,30 @@ export const MeetingsExtension = Prisma.defineExtension({
       async create({ args, query }) {
         const result = (await query(args)) as MeetingsProps;
         console.log("New Meeting Created:", result);
-        const meetingData: MeetingsProps = {
-          Audio: result.Audio ? Buffer.from(result.Audio) : undefined,
-          id: result.id,
-          userId: result.userId,
-          title: result.title || null,
-          createdAt: result.createdAt || new Date(),
-          updatedAt: result.updatedAt || new Date(),
-          text: result.text || null,
-        };
-        return await getText(meetingData);
+
+        if (!result.Audio) return result;
+
+        const processedMeeting = await getText(result);
+
+        return query({
+          ...args,
+          data: {
+            ...args.data,
+            Text: processedMeeting.text,
+            title: processedMeeting.title,
+            description: processedMeeting.description,
+            keytakeaways: processedMeeting.key_takeaways,
+            deadlines: processedMeeting.deadlines,
+            updatedAt: new Date(),
+            tasks: {
+              create: processedMeeting.tasks.map((task) => ({
+                task: task.task,
+                assigned_to: task.assigned_to || null,
+                deadline: task.deadline || null,
+              })),
+            },
+          },
+        });
       },
     },
   },
