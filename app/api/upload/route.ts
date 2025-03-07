@@ -1,5 +1,4 @@
 import prisma from "@/DB/prisma";
-import { getAudioDuration } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -55,7 +54,6 @@ export async function POST(req: NextRequest) {
 
     console.log("iscopmleted", isCompleted);
 
-    const duration = await getAudioDuration(updatedBuffer);
 
     // Convert buffer to audio file when completed
     if (isCompleted) {
@@ -63,7 +61,6 @@ export async function POST(req: NextRequest) {
         data: {
           Audio: updatedBuffer,
           userId: token,
-          duration,
         },
       });
       return NextResponse.json({ meetingId, isCompleted }, { status: 200 });

@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { AssemblyAI } from "assemblyai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const MeetingsExtension = Prisma.defineExtension({
   name: "MeetingsExtension",
@@ -10,12 +11,12 @@ export const MeetingsExtension = Prisma.defineExtension({
         console.log("New Meeting Created:", result);
         const meetingData: MeetingsProps = {
           Audio: result.Audio ? Buffer.from(result.Audio) : undefined,
-          id: result.id, // Ensure to include the id
-          userId: result.userId, // Ensure to include the userId
-          title: result.title || null, // Include title, default to null if not present
-          createdAt: result.createdAt || new Date(), // Include createdAt, default to current date if not present
-          updatedAt: result.updatedAt || new Date(), // Include updatedAt, default to current date if not present
-          text: result.text || null, // Include text, default to null if not present
+          id: result.id,
+          userId: result.userId,
+          title: result.title || null,
+          createdAt: result.createdAt || new Date(),
+          updatedAt: result.updatedAt || new Date(),
+          text: result.text || null,
         };
         return await getText(meetingData);
       },
@@ -29,6 +30,7 @@ async function getText(meeting: MeetingsProps) {
     return meeting;
   }
   const text = await audioToText(meeting.Audio);
+
   return {
     ...meeting,
     text,
@@ -55,6 +57,33 @@ async function audioToText(audio: Buffer) {
     audio: audio,
   });
   console.log("Transcript:", transcript.text);
-  
+  await geminiAi(transcript.text as string);
   return transcript.text;
+}
+
+const prompt = `You are an AI assistant processing a meeting transcript.Here is a transcript of a meeting. Please extract the key takeaways from the discussion. If there are any tasks mentioned, list them separately along with their assigned persons (if specified). Additionally, note any deadlines provided. Format the response in a structured way: 
+
+**Key Takeaways:**  
+- [List key points]  
+
+**Tasks:**  
+- Task: [Description]  
+  - Assigned to: [Person]  
+  - Deadline: [If mentioned]  
+
+**Deadlines:**  
+- [List any deadlines separately if not part of tasks]  
+
+Transcript: `;
+
+async function geminiAi(text: string | undefined) {
+  const api_key = process.env.GEMINI_API_KEY as string;
+  if (!api_key) {
+    throw new Error("Gemini API key not found");
+  }
+  const genAI = new GoogleGenerativeAI(api_key);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const result = await model.generateContent(prompt + text);
+  console.log("Gemini AI result:", result.response.text());
+  return result.response.text();
 }

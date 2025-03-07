@@ -93,7 +93,6 @@ model Meetings {
   Text      String?
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  duration  Int
   title     String?
   createdAt DateTime? @default(now()) // Default to current timestamp
   updatedAt DateTime? @default(now())
