@@ -2,6 +2,51 @@ import { Prisma } from "@prisma/client";
 import { AssemblyAI } from "assemblyai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+interface MeetingsProps {
+  Audio: Buffer | undefined;
+  id: string;
+  userId: string;
+  title: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  text: string | null;
+}
+
+interface MeetingSummary {
+  title: string;
+  description: string;
+  key_takeaways: string[];
+  tasks: Task[];
+  deadlines: string[];
+}
+
+interface Task {
+  task: string;
+  assigned_to: string;
+  deadline: string;
+}
+
+const client = new AssemblyAI({
+  apiKey: process.env.ASSEMBLYAI_API_KEY as string,
+});
+
+const system_instruction = `You are an AI assistant processing a meeting transcript. Here is a transcript of a meeting. Extract key takeaways, tasks (with assigned persons, if specified),Also give an title for the meeting and a small decription containing the topic discussed it sshoul be less then two lines, and deadlines. Return only a valid JSON object without markdown formatting or extra text with the following structure:
+
+{
+  "title": "Meeting title",
+  "description": "Meeting description",
+  "key_takeaways": ["Takeaway 1", "Takeaway 2"],
+  "tasks": [
+    {
+      "task": "Task description",
+      "assigned_to": "Person (if mentioned)",
+      "deadline": "YYYY-MM-DD or 'Not specified'"
+    }
+  ],
+  "deadlines": ["Deadline 1", "Deadline 2"]
+}
+ `;
+
 export const MeetingsExtension = Prisma.defineExtension({
   name: "MeetingsExtension",
   query: {
@@ -30,26 +75,20 @@ async function getText(meeting: MeetingsProps) {
     return meeting;
   }
   const text = await audioToText(meeting.Audio);
-
+  const { deadlines, description, key_takeaways, tasks, title } =
+    await geminiAi(text as string);
+  console.log(deadlines, description, key_takeaways, tasks, title);
   return {
     ...meeting,
     text,
+    title,
+    description,
+    key_takeaways,
+    tasks,
+    deadlines,
   };
 }
 
-interface MeetingsProps {
-  Audio: Buffer | undefined;
-  id: string;
-  userId: string;
-  title: string | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  text: string | null;
-}
-
-const client = new AssemblyAI({
-  apiKey: process.env.ASSEMBLYAI_API_KEY as string,
-});
 async function audioToText(audio: Buffer) {
   console.log("Transcribing audio...", audio);
 
@@ -57,33 +96,30 @@ async function audioToText(audio: Buffer) {
     audio: audio,
   });
   console.log("Transcript:", transcript.text);
-  await geminiAi(transcript.text as string);
   return transcript.text;
 }
 
-const prompt = `You are an AI assistant processing a meeting transcript.Here is a transcript of a meeting. Please extract the key takeaways from the discussion. If there are any tasks mentioned, list them separately along with their assigned persons (if specified). Additionally, note any deadlines provided. Format the response in a structured way: 
-
-**Key Takeaways:**  
-- [List key points]  
-
-**Tasks:**  
-- Task: [Description]  
-  - Assigned to: [Person]  
-  - Deadline: [If mentioned]  
-
-**Deadlines:**  
-- [List any deadlines separately if not part of tasks]  
-
-Transcript: `;
-
-async function geminiAi(text: string | undefined) {
+async function geminiAi(text: string): Promise<MeetingSummary> {
   const api_key = process.env.GEMINI_API_KEY as string;
   if (!api_key) {
     throw new Error("Gemini API key not found");
   }
   const genAI = new GoogleGenerativeAI(api_key);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent(prompt + text);
+  const textPart = {
+    text,
+  };
+
+  const request = {
+    contents: [{ role: "user", parts: [textPart] }],
+    systemInstruction: system_instruction,
+  };
+  const result = await model.generateContent(request);
+
   console.log("Gemini AI result:", result.response.text());
-  return result.response.text();
+  const geminiText = result.response.text();
+  const cleanedText = geminiText.replace(/```json|```/g, "").trim();
+  const jsonData = JSON.parse(cleanedText);
+
+  return jsonData as MeetingSummary;
 }
