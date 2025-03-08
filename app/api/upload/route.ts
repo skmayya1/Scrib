@@ -1,7 +1,6 @@
 import prisma from "@/DB/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function POST(req: NextRequest) {
   try {
     // Get Authorization header
@@ -55,15 +54,24 @@ export async function POST(req: NextRequest) {
 
     console.log("iscopmleted", isCompleted);
 
-
-    if (isCompleted && updatedBuffer.length > 0 ) {
-      await prisma.meetings.create({
-        data: {
-          Audio: updatedBuffer,
-          userId: token,
-        },
+    if (isCompleted && updatedBuffer.length > 0) {
+      const deletedData = await prisma.meet.delete({
+        where: { id: meetingId as string },
       });
-      await prisma.meet.deleteMany();
+      console.log("isCompleted - creating new meeting", isCompleted);
+
+      if (deletedData && deletedData.id === meetingId) {
+        const newMeeting = await prisma.meetings.create({
+          data: {
+            Audio: updatedBuffer,
+            userId: token,
+          },
+        });
+        return NextResponse.json(
+          { meetingId: newMeeting.id, isCompleted },
+          { status: 200 }
+        );
+      }
       return NextResponse.json({ meetingId, isCompleted }, { status: 200 });
     }
     await prisma.meet.update({
@@ -80,4 +88,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

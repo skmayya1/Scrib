@@ -56,7 +56,9 @@ export const MeetingsExtension = Prisma.defineExtension({
   query: {
     meetings: {
       async create({ args, query }) {
-        const result = (await query(args)) as MeetingsProps;
+        const result = {  
+          ...args.data,
+        } as MeetingsProps;
         console.log("New Meeting Created:", result);
 
         if (!result.Audio) return result;

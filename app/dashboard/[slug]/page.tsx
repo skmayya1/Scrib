@@ -46,7 +46,7 @@ const Page = () => {
   }, [slug]);
 
   return (
-    <div className="bg-[#191818]  min-h-screen flex flex-col justify-start  w-full ">
+    <div className="bg-[#191818]  min-h-screen flex flex-col justify-start  w-full pb-24 ">
       <Navbar />
 
       {meetingData ? (
@@ -143,11 +143,11 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto">
-            <table className="min-w-full border border-zinc-800 bg-[#1c1c1cfc] divide-y divide-zinc-800 rounded-lg">
+          <div className="w-full overflow-x-auto ">
+            <table className="min-w-full border border-zinc-800 bg-[#1c1c1cfc] divide-y divide-zinc-800  ">
               <thead>
                 <tr>
-                  <th className="w-12"></th>
+                  <th className="w-12 "></th>
                   <th className="px-6 py-3 text-left font-medium text-zinc-400 uppercase tracking-wider max-w-md w-[45%]">
                     Task
                   </th>
@@ -159,7 +159,7 @@ const Page = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-[#1c1c1cfc] divide-y divide-zinc-800 w-full">
+              <tbody className="bg-[#1c1c1cfc] divide-y divide-zinc-800 w-full ">
                 {meetingData.tasks.length > 0 ? (
                   meetingData.tasks.map((task, index) => (
                     <tr
