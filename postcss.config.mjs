@@ -5,7 +5,6 @@ const config = {
         "./app/**/*.{js,ts,jsx,tsx}",
         "./Components/**/*.{js,ts,jsx,tsx}",
    ],
-   
     },
 };
 

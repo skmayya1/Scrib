@@ -1,6 +1,7 @@
 import prisma from "@/DB/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async function POST(req: NextRequest) {
   try {
     // Get Authorization header
@@ -55,14 +56,14 @@ export async function POST(req: NextRequest) {
     console.log("iscopmleted", isCompleted);
 
 
-    // Convert buffer to audio file when completed
-    if (isCompleted) {
+    if (isCompleted && updatedBuffer.length > 0 ) {
       await prisma.meetings.create({
         data: {
           Audio: updatedBuffer,
           userId: token,
         },
       });
+      await prisma.meet.deleteMany();
       return NextResponse.json({ meetingId, isCompleted }, { status: 200 });
     }
     await prisma.meet.update({
@@ -79,3 +80,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
