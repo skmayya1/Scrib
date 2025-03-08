@@ -5,7 +5,15 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Input from "@/Components/Dashboard/Input";
-import { Share, Ellipsis, ChevronLeft, NotebookPen } from "lucide-react";
+import {
+  Share,
+  Ellipsis,
+  ChevronLeft,
+  NotebookPen,
+  Calendar,
+} from "lucide-react";
+
+import { format } from "date-fns";
 
 interface Task {
   task: string;
@@ -111,34 +119,65 @@ const Page = () => {
               </div>
             </div>
             <div className="flex items-start justify-start w-[30%] ">
-              <div className="border border-zinc-800  bg-[#1c1c1cfc] w-full h-fit p-4 flex items-start justify-start flex-col gap-4 rounded-lg">
-                {meetingData.deadlines.length > 0 ? (
-                  <div className="w-full flex items-start justify-start flex-col gap-4 h-fit p-2">
-                    <h2 className="text-xl font-semibold text-zinc-300">
-                      Deadlines
-                    </h2>
-                    <ul className="w-full flex items-start justify-start flex-col gap-2">
-                      {meetingData.deadlines.map((deadline, index) => (
-                        <li
-                          key={index}
-                          className="text-lg text-zinc-400  ml-1 font-semibold tracking-wider flex gap-2 items-center "
-                        >
-                          {deadline}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="w-full flex items-start justify-center flex-col gap-4">
-                    <h2 className="text-lg font-semibold text-zinc-400">
-                      Deadlines
-                    </h2>
+              <div className="border border-zinc-800  bg-[#1c1c1cfc] w-full h-fit p-4 grid items-start justify-start grid-cols-2 gap-4 rounded-lg">
+                <div className="w-full flex items-start justify-start flex-col gap-4">
+                  {meetingData.deadlines.length > 0 ? (
+                    <div className="w-full flex items-start justify-start flex-col gap-4 h-fit p-2">
+                      <h2 className="text-lg  font-semibold text-zinc-400 flex gap-2 items-center">
+                        Deadlines <Calendar size={14} color="gray" />
+                      </h2>
+                      <ul className="w-full flex items-start justify-start flex-col gap-2">
+                        {meetingData.deadlines.map((deadline, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center "
+                          >
+                            {format(deadline, "PPP ")}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="w-full flex items-start justify-center flex-col gap-4">
+                      <h2 className="text-lg font-semibold text-zinc-400">
+                        Deadlines
+                      </h2>
 
-                    <p className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center ">
-                      No deadlines
-                    </p>
-                  </div>
-                )}
+                      <p className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center ">
+                        No deadlines
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full flex items-start justify-start flex-col gap-4">
+                  {meetingData.deadlines.length > 0 ? (
+                    <div className="w-full flex items-start justify-start flex-col gap-4 h-fit p-2">
+                      <h2 className="text-lg  font-semibold text-zinc-400 flex gap-2 items-center">
+                        Deadlines <Calendar size={14} color="gray" />
+                      </h2>
+                      <ul className="w-full flex items-start justify-start flex-col gap-2">
+                        {meetingData.deadlines.map((deadline, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center "
+                          >
+                            {format(deadline, "PPP ")}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="w-full flex items-start justify-center flex-col gap-4">
+                      <h2 className="text-lg font-semibold text-zinc-400">
+                        Deadlines
+                      </h2>
+
+                      <p className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center ">
+                        No deadlines
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -64,7 +64,7 @@ const Section = () => {
             className="bg-[#242425] rounded-lg h-full cursor-pointer  hover:bg-[#272626]
       "
           >
-            <div className="p-4">
+            <div className="p-4 h-full flex flex-col justify-between">
               <h1 className="text-2xl text-zinc-500 font-medium line-clamp-2 antialiased">
                 {activity.title}
               </h1>

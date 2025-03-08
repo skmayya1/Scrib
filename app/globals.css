@@ -69,3 +69,18 @@ body::-webkit-scrollbar-thumb {
   width: 10px;
   border-radius: 10px;
 }
+
+*::selection {
+  background: #2c2c2c;
+  color: #ffffffcf;
+}
+
+*::-moz-selection {
+  background: #2c2c2c;
+    color: #ffffffcf;
+}
+
+*::-webkit-selection {
+  background: #2c2c2c;
+    color: #ffffffcf;
+}
