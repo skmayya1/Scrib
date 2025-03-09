@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { AssemblyAI } from "assemblyai";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { model } from "@/gemini/gemini";
 
 interface MeetingsProps {
   Audio: Buffer | undefined;
@@ -120,12 +120,6 @@ async function audioToText(audio: Buffer) {
 }
 
 async function geminiAi(text: string): Promise<MeetingSummary> {
-  const api_key = process.env.GEMINI_API_KEY as string;
-  if (!api_key) {
-    throw new Error("Gemini API key not found");
-  }
-  const genAI = new GoogleGenerativeAI(api_key);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const textPart = {
     text,
   };

@@ -26,8 +26,6 @@ export function PromptProvider({ children }: { children: ReactNode }) {
 
   const FetchData = async () => {
       setloading(true);
-      
-      //fetch data OK OOPEN THE CHAT
   };
 
   const value = {

@@ -3,7 +3,7 @@ import { MoveUpRight } from "lucide-react";
 
 const Chat = () => {
 
-  const { showChat, setshowChat } = usePrompt(); 
+  const { showChat, setshowChat  } = usePrompt(); 
   
   return (
     <div
