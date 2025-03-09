@@ -95,6 +95,8 @@ model Meetings {
   keytakeaways String[]
   deadlines    String[]
   tasks        Task[]
+  isPublic     Boolean   @default(false)
+  Editable     Boolean   @default(false)
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime? @default(now()) // Default to current timestamp
@@ -107,6 +109,7 @@ model Task {
   assigned_to String?
   deadline    String?
   meetingId   String
+  isCompleted Boolean  @default(false)
   meeting     Meetings @relation(fields: [meetingId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())

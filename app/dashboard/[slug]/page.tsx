@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { format } from "date-fns";
+import MenuToggle from "@/Components/Dashboard/MenuToggle";
 
 interface Task {
   task: string;
@@ -23,6 +24,7 @@ interface Task {
   assigned_to: string | null;
   deadline: string | null;
   meetingId: string;
+  isCompleted: boolean;
 }
 
 interface MeetingData {
@@ -39,6 +41,7 @@ const Page = () => {
   const { slug } = useParams();
   const router = useRouter();
   const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchMeetingData = async () => {
@@ -69,14 +72,18 @@ const Page = () => {
               <ChevronLeft size={13} color="gray" />
               Back
             </button>
-            <div className="flex gap-5 items-center pr-5">
+            <div className="flex gap-5 items-center pr-5 relative">
               <button className="flex  items-center hover:bg-[#111] text-sm  border border-zinc-800 rounded-lg px-2 py-1 text-zinc-400 cursor-pointer gap-2">
                 <Share size={13} color="gray" />
                 Share
               </button>
-              <button className="w-full cursor-pointer items-center text-sm text-zinc-300 flex   gap-2 ">
+              <button
+                onClick={() => setMenuIsOpen(!menuIsOpen)}
+                className="w-full cursor-pointer items-center text-sm text-zinc-300 flex   gap-2 "
+              >
                 <Ellipsis size={19} color="gray" />
               </button>
+              {menuIsOpen && <MenuToggle meetingsId={ meetingData.id} />}
             </div>
           </div>
           <div className=" h-full flex w-full  py-16 gap-7">
@@ -210,9 +217,17 @@ const Page = () => {
                       }
                     >
                       <td className="pl-4 py-4 whitespace-nowrap text-sm text-zinc-500 w-12">
-                        <span className="border-zinc-700 rounded-[2px] border w-fit p-1.5 block bg-[#242424fc]" />
+                        <span
+                          className={`border-zinc-700 rounded-[2px] border h-3 flex items-center w-3  bg-[#242424fc] ${
+                            task.isCompleted ? "text-green-500" : ""
+                          }`}
+                        >
+                          {task.isCompleted && "✓"}
+                        </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold max-w-3xl  text-zinc-500 truncate">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap font-semibold max-w-3xl text-zinc-500 truncate`}
+                      >
                         {task.task}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap max-w-xs  text-zinc-500 truncate">
