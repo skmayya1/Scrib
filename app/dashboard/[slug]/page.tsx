@@ -19,7 +19,6 @@ import {
 import { format } from "date-fns";
 import MenuToggle from "@/Components/Dashboard/MenuToggle";
 import Chat from "@/Components/Dashboard/Chat";
-import { PromptProvider } from "@/contexts/PromptContext";
 
 interface Task {
   task: string;
@@ -101,7 +100,6 @@ const Page = () => {
   };
 
   return (
-    <PromptProvider>
       <div className="bg-[#191818]  min-h-screen flex flex-col justify-start  w-full pb-32 ">
         <Navbar />
 
@@ -329,7 +327,6 @@ const Page = () => {
           />
         </div>
       </div>
-    </PromptProvider>
   );
 };
 

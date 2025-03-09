@@ -16,12 +16,13 @@ const Page = () => {
   console.log(session);
 
   return (
+    
     <div className="bg-[#191818] min-h-screen   w-full o">
       <Navbar />
       <div className="MAXWIDTH h-full flex-col py-20 ">
         {/*   <Section /> */}
         <div className="h-[200px] w-full max-w-[800px] flex items-center justify-center gap-3.5">
-          <Input placeholder="Looking for a past meeting?" />
+          <Input isGlobal placeholder="Looking for a past meeting?" />
           <div className="w-[25%] h-[25%] bg-[#242425] rounded-lg flex items-center justify-center gap-3 px-2 text-zinc-400">
             <div className="h-2 w-6 opacity-70 bg-green-500 rounded-full animate-slime"></div>
             Recording

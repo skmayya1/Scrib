@@ -119,7 +119,7 @@ async function audioToText(audio: Buffer) {
   return transcript.text;
 }
 
-async function geminiAi(text: string): Promise<MeetingSummary> {
+ async function geminiAi(text: string): Promise<MeetingSummary> {
   const textPart = {
     text,
   };
