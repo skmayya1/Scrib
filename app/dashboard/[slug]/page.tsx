@@ -49,7 +49,6 @@ const Page = () => {
   const router = useRouter();
   const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [showChat, setshowChat] = useState(false);
 
   useEffect(() => {
     const fetchMeetingData = async () => {
@@ -100,9 +99,7 @@ const Page = () => {
       console.error("Error toggling task:", error);
     }
   };
-  const setShowChat = () => {
-    setshowChat(!showChat);
-  };
+
   return (
     <PromptProvider>
       <div className="bg-[#191818]  min-h-screen flex flex-col justify-start  w-full pb-32 ">
@@ -324,7 +321,7 @@ const Page = () => {
         )}
         <div className="MAXWIDTH fixed bottom-0 right-0 left-0 flex flex-col items-center justify-center gap-2 ">
           <div className="absolute w-full h-full bg-[#18181874] blur  z-0" />
-          <Chat setshowChat={setShowChat} showChat={showChat} />
+          <Chat />
           <Input
             placeholder="Ask me anything from this discussion!"
             needShadow

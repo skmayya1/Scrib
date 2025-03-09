@@ -1,12 +1,10 @@
+import { usePrompt } from "@/contexts/PromptContext";
 import { MoveUpRight } from "lucide-react";
 
-const Chat = ({
-  showChat,
-  setshowChat,
-}: {
-  showChat: boolean;
-  setshowChat: () => void;
-}) => {
+const Chat = () => {
+
+  const { showChat, setshowChat } = usePrompt(); 
+  
   return (
     <div
       className={`flex flex-col gap-4 cursor-pointer rounded-lg bg-[#242425] self-start  items-center justify-between text-sm shadow-md border border-zinc-700 shadow-zinc-800 text-zinc-400 transition-all  ease-in-out z-10
@@ -14,7 +12,7 @@ const Chat = ({
     `}
     >
       <button
-        onClick={setshowChat}
+        onClick={() => setshowChat(!showChat)}
         className={`h-10 w-full cursor-pointer  relative transition-all duration-700 ease-in-out 
           ${
             showChat
