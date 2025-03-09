@@ -11,6 +11,9 @@ import {
   ChevronLeft,
   NotebookPen,
   Calendar,
+  Globe,
+  Lock,
+  Edit,
 } from "lucide-react";
 
 import { format } from "date-fns";
@@ -27,7 +30,7 @@ interface Task {
   isCompleted: boolean;
 }
 
-interface MeetingData {
+export interface MeetingData {
   id: string;
   title: string | null;
   description: string | null;
@@ -35,6 +38,8 @@ interface MeetingData {
   deadlines: string[];
   createdAt: Date | null;
   tasks: Task[];
+  isPublic: boolean;
+  Editable: boolean;
 }
 
 const Page = () => {
@@ -55,6 +60,43 @@ const Page = () => {
 
     fetchMeetingData();
   }, [slug]);
+
+  const setData = (data: MeetingData) => {
+    setMeetingData(data);
+  };
+
+  const handleTaskToggle = async (taskId: string) => {
+    try {
+      if (taskId) {
+        const response = await fetch(`/api/activity/${slug}/task`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskId: taskId }),
+        });
+
+        if (response.ok) {
+          // Update the local state to reflect the change
+          setMeetingData((prev) => {
+            if (!prev) {
+              return prev;
+            }
+            return {
+              ...prev,
+              tasks: prev.tasks.map((task) =>
+                task.id === taskId
+                  ? { ...task, isCompleted: !task.isCompleted }
+                  : task
+              ),
+            };
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling task:", error);
+    }
+  };
 
   return (
     <div className="bg-[#191818]  min-h-screen flex flex-col justify-start  w-full pb-24 ">
@@ -83,7 +125,14 @@ const Page = () => {
               >
                 <Ellipsis size={19} color="gray" />
               </button>
-              {menuIsOpen && <MenuToggle meetingsId={ meetingData.id} />}
+              {menuIsOpen && (
+                <MenuToggle
+                  meetingData={meetingData}
+                  setMeetingData={setData}
+                  meetingsId={meetingData.id}
+                  setMenuIsOpen={setMenuIsOpen}
+                />
+              )}
             </div>
           </div>
           <div className=" h-full flex w-full  py-16 gap-7">
@@ -125,7 +174,7 @@ const Page = () => {
                 )}
               </div>
             </div>
-            <div className="flex items-start justify-start w-[30%] ">
+            <div className="flex items-start  justify-start w-[30%] ">
               <div className="border border-zinc-800  bg-[#1c1c1cfc] w-full h-fit p-4 grid items-start justify-start grid-cols-2 gap-4 rounded-lg">
                 <div className="w-full flex items-start justify-start flex-col gap-4">
                   {meetingData.deadlines.length > 0 ? (
@@ -156,34 +205,39 @@ const Page = () => {
                     </div>
                   )}
                 </div>
-                <div className="w-full flex items-start justify-start flex-col gap-4">
-                  {meetingData.deadlines.length > 0 ? (
-                    <div className="w-full flex items-start justify-start flex-col gap-4 h-fit p-2">
-                      <h2 className="text-lg  font-semibold text-zinc-400 flex gap-2 items-center">
-                        Deadlines <Calendar size={14} color="gray" />
-                      </h2>
-                      <ul className="w-full flex items-start justify-start flex-col gap-2">
-                        {meetingData.deadlines.map((deadline, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center "
-                          >
-                            {format(deadline, "PPP ")}
-                          </li>
-                        ))}
-                      </ul>
+                <div className="w-full flex items-start justify-start flex-col gap-4 py-4">
+                  <div className="">
+                    {meetingData.isPublic ? (
+                      <div className="flex items-center gap-2 text-sm text-zinc-400">
+                        {" "}
+                        <Globe size={12} color="gray" />
+                        Anyone can view
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-zinc-400">
+                        <Lock size={12} color="gray" />
+                        Only you
+                      </div>
+                    )}
+                  </div>
+                  <div className="">
+                    <div className="">
+                      {meetingData.Editable ? (
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          {" "}
+                          <Edit size={12} color="gray" />
+                          Anyone can edit
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          <Edit size={12} color="gray" />
+                          {meetingData.isPublic
+                            ? "Only you"
+                            : "public access required"}
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="w-full flex items-start justify-center flex-col gap-4">
-                      <h2 className="text-lg font-semibold text-zinc-400">
-                        Deadlines
-                      </h2>
-
-                      <p className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center ">
-                        No deadlines
-                      </p>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -218,7 +272,8 @@ const Page = () => {
                     >
                       <td className="pl-4 py-4 whitespace-nowrap text-sm text-zinc-500 w-12">
                         <span
-                          className={`border-zinc-700 rounded-[2px] border h-3 flex items-center w-3  bg-[#242424fc] ${
+                          onClick={() => handleTaskToggle(task.id)}
+                          className={`border-zinc-700 rounded-[2px] border h-3 flex items-center w-3 cursor-pointer bg-[#242424fc] ${
                             task.isCompleted ? "text-green-500" : ""
                           }`}
                         >
