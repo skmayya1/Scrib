@@ -40,10 +40,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/selenium-webdriver": "^4.1.28",
+    "autoprefixer": "^10.4.21",
     "chromedriver": "^133.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.2.0",
-    "tailwindcss": "^4",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.12",
     "typescript": "^5"
   }
 }

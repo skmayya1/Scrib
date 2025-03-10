@@ -5,22 +5,20 @@ import { usePrompt } from "../../contexts/PromptContext";
 const Input = ({
   placeholder,
   needShadow,
-  isGlobal = false,
 }: {
   placeholder: string;
   needShadow?: boolean;
-  isGlobal: boolean;
 }) => {
   const { prompt, setPrompt, handlePromptSubmit } = usePrompt();
 
   return (
     <div
-      className={`w-full h-[25%] bg-[#242425] rounded-lg flex items-center justify-between px-2 z-10 ${
-        needShadow ? "shadow shadow-zinc-800" : ""
+      className={`w-full bg-[#242425] rounded-lg flex items-center justify-between px-3 py-2 z-10 transition-all duration-200 hover:bg-[#2a2a2b] focus-within:bg-[#2a2a2b] ${
+        needShadow ? "shadow-lg shadow-black/20" : ""
       }`}
     >
       <input
-        className="h-full w-[99%] outline-0 p-4 text-sm text-zinc-300 placeholder:tracking-wide tracking-wider"
+        className="h-10 w-full bg-transparent outline-none text-sm text-zinc-300 placeholder:text-zinc-500 tracking-wide"
         placeholder={placeholder}
         type="text"
         value={prompt}
@@ -32,10 +30,10 @@ const Input = ({
         }}
       />
       <button
-        className="h-full w-10 flex items-center justify-center cursor-pointer"
+        className="h-10 w-10 flex items-center justify-center cursor-pointer hover:text-zinc-300 transition-colors"
         onClick={handlePromptSubmit}
       >
-        <ChevronRight size={20} color="gray" />
+        <ChevronRight size={18} className="text-zinc-500" />
       </button>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { formatDate } from "@/Components/Dashboard/Section";
 import Navbar from "@/Components/Navbar";
-import Image from "next/image";
+
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Input from "@/Components/Dashboard/Input";
@@ -14,9 +14,10 @@ import {
   Globe,
   Lock,
   Edit,
+  ClipboardList,
+  UserCircle,
 } from "lucide-react";
 
-import { format, parseISO } from "date-fns";
 import MenuToggle from "@/Components/Dashboard/MenuToggle";
 import Chat from "@/Components/Dashboard/Chat";
 import DeleteModal from "@/Components/Dashboard/DeleteModal";
@@ -69,7 +70,7 @@ const Page = () => {
 
   console.log(meetingData?.deadlines);
 
-  const setData = (data: MeetingData) => {
+  const setData = (data: MeetingData | null) => {
     setMeetingData(data);
   };
 
@@ -117,221 +118,221 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-[#191818] min-h-screen flex flex-col justify-start w-full pb-32 relative">
+    <div className="bg-[#191818] min-h-screen flex flex-col w-full pb-32 relative">
       <Navbar />
 
       {meetingData ? (
-        <div className="flex w-full items-center flex-col justify-between MAXWIDTH">
-          <div className="flex w-full items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 w-full py-6">
+          <div className="flex w-full items-center justify-between mb-6">
             <button
-              onClick={() => {
-                router.push("/dashboard");
-              }}
-              className="w-full cursor-pointer self-start text-sm text-zinc-300 flex items-center justify-start gap-2 "
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50 rounded-lg transition-all duration-200 group"
             >
-              <ChevronLeft size={13} color="gray" />
-              Back
+              <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back to Dashboard</span>
             </button>
-            <div className="flex gap-5 items-center pr-5 relative">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleShare}
-                className="flex items-center hover:bg-[#111] text-sm border border-zinc-800 rounded-lg px-2 py-1 text-zinc-400 cursor-pointer gap-2 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-400 hover:text-zinc-300 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-all duration-200 group w-[130px]"
               >
-                <Share size={13} color="gray" />
-                {copied ? "Copied!" : "Share"}
+                <Share size={15} className="text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0" />
+                <span className="relative w-full">
+                  <span className={`absolute inset-0 flex items-center justify-start whitespace-nowrap transition-opacity duration-200 ${copied ? 'opacity-100' : 'opacity-0'}`}>
+                    Copied!
+                  </span>
+                  <span className={`absolute inset-0 flex items-center justify-start whitespace-nowrap transition-opacity duration-200 ${copied ? 'opacity-0' : 'opacity-100'}`}>
+                    Share Meeting
+                  </span>
+                </span>
               </button>
-              <button
-                onClick={() => setMenuIsOpen(!menuIsOpen)}
-                className="w-full cursor-pointer items-center text-sm text-zinc-300 flex   gap-2 "
-              >
-                <Ellipsis size={19} color="gray" />
-              </button>
-              {menuIsOpen && (
-                <MenuToggle
-                  meetingData={meetingData}
-                  setMeetingData={setData}
-                  meetingsId={meetingData.id}
-                  setMenuIsOpen={setMenuIsOpen}
-                />
-              )}
+              <div className="relative">
+                <button
+                  onClick={() => setMenuIsOpen(!menuIsOpen)}
+                  className="p-2 text-zinc-400 hover:text-zinc-300 hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
+                >
+                  <Ellipsis size={20} />
+                </button>
+                {menuIsOpen && (
+                  <MenuToggle
+                    meetingData={meetingData}
+                    setMeetingData={setData}
+                    meetingsId={meetingData.id}
+                    setMenuIsOpen={setMenuIsOpen}
+                  />
+                )}
+              </div>
             </div>
           </div>
-          <div className=" h-full flex w-full  py-16 justify-between">
-            <div className="w-[66%] flex items-start justify-start flex-col gap-10">
-              <div className="w-full self-start flex items-start justify-start  flex-col gap-4">
-                <h1 className="text-3xl font-semibold text-zinc-300 line-clamp-2">
-                  {meetingData.title}
-                </h1>
-                {meetingData.createdAt && (
-                  <p className="text-sm text-zinc-400 tracking-wider ml-1 font-semibold">
-                    {formatDate(meetingData.createdAt)}
-                  </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-8">
+              <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-2xl md:text-3xl font-bold text-white">
+                    {meetingData.title}
+                  </h1>
+                  {meetingData.createdAt && (
+                    <div className="flex items-center gap-2 text-zinc-400">
+                      <Calendar size={14} />
+                      <time className="text-sm">{formatDate(meetingData.createdAt)}</time>
+                    </div>
+                  )}
+                </div>
+                {meetingData.description && (
+                  <p className="text-zinc-400 leading-relaxed">{meetingData.description}</p>
                 )}
               </div>
-              <div className="w-full flex items-start justify-start self-start flex-col gap-4 ">
-                {meetingData.keytakeaways.length > 0 && (
-                  <div className="w-full flex items-start justify-start flex-col gap-4">
-                    <h2 className="text-xl font-semibold text-zinc-400 flex gap-2 items-center">
-                      Key Takeaways <NotebookPen size={12} />
-                    </h2>
-                    <ul className="w-full flex items-start justify-start flex-col gap-2">
-                      {meetingData.keytakeaways.map((keytakeaway, index) => (
-                        <li
-                          key={index}
-                          className="text-lg text-zinc-400  ml-1 font-light tracking-wider flex gap-2 items-start  "
-                        >
-                          <Image
-                            className="mt-2 select-none"
-                            src="/dot-white.png"
-                            width={12}
-                            height={12}
-                            alt="dot"
-                          />
+              
+              {meetingData.keytakeaways.length > 0 && (
+                <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-white">
+                    <NotebookPen size={18} />
+                    <h2 className="text-lg font-semibold">Key Takeaways</h2>
+                  </div>
+                  <ul className="space-y-3">
+                    {meetingData.keytakeaways.map((keytakeaway, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-3 text-zinc-300 group"
+                      >
+                        <div className="mt-2 h-1.5 w-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                        <p className="text-base leading-relaxed group-hover:text-white transition-colors">
                           {keytakeaway}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-            <div className="flex items-start  justify-start w-[25%] ">
-              <div className="border border-zinc-800  bg-[#1c1c1cfc] w-full h-fit p-4 flex items-start justify-start flex-col gap-4 rounded-lg">
-                <div className="w-full flex items-start justify-start flex-col gap-4 py-4">
-                  <div className="">
-                    {meetingData.isPublic ? (
-                      <div className="flex items-center gap-2 text-sm text-zinc-400">
-                        {" "}
-                        <Globe size={12} color="gray" />
-                        Anyone can view
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-sm text-zinc-400">
-                        <Lock size={12} color="gray" />
-                        Only you
-                      </div>
-                    )}
-                  </div>
-                  <div className="">
-                    <div className="">
-                      {meetingData.Editable ? (
-                        <div className="flex items-center gap-2 text-sm text-zinc-400">
-                          {" "}
-                          <Edit size={12} color="gray" />
-                          Anyone can edit
-                        </div>
+            <div className="space-y-4">
+              <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-6">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-zinc-400">
+                      {meetingData.isPublic ? (
+                        <>
+                          <Globe size={16} className="text-green-500/80" />
+                          <span className="text-sm">Public Meeting</span>
+                        </>
                       ) : (
-                        <div className="flex items-center gap-2 text-sm text-zinc-400">
-                          <Edit size={12} color="gray" />
-                          {meetingData.isPublic
-                            ? "Only you"
-                            : "public access required"}
-                        </div>
+                        <>
+                          <Lock size={16} className="text-zinc-400" />
+                          <span className="text-sm ">Private Meeting</span>
+                        </>
                       )}
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs ${meetingData.isPublic ? 'bg-green-500/5 text-green-400/80' : 'bg-zinc-800/50 text-zinc-500'}`}>
+                      {meetingData.isPublic ? 'Anyone can view' : 'Only you'}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-zinc-400">
+                      <Edit size={16} className={meetingData.Editable ? 'text-blue-500/80' : 'text-zinc-400'} />
+                      <span className="text-sm">Edit Access</span>
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs ${meetingData.Editable ? 'bg-blue-500/5 text-blue-400/80' : 'bg-zinc-800/50 text-zinc-500'}`}>
+                      {meetingData.Editable ? 'Anyone can edit' : 
+                       meetingData.isPublic ? 'Only you' : 'Requires public access'}
                     </div>
                   </div>
                 </div>
-                <div className="w-full flex items-start justify-start flex-col gap-4">
-                  {meetingData.deadlines.length > 0 ? (
-                    <div className="w-full flex items-start justify-start flex-col gap-4 h-fit p-2">
-                      <h2 className="text-lg  font-semibold text-zinc-400 flex gap-2 items-center">
-                        Deadlines <Calendar size={14} color="gray" />
-                      </h2>
-                      <ul className="w-full flex items-start justify-start flex-col gap-2">
-                        {meetingData.deadlines.map((deadline, index) => (
-                          <li
-                            key={index}
-                            className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center "
-                          >
-                            {deadline}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="w-full flex items-start justify-center flex-col gap-4">
-                      <h2 className="text-lg font-semibold text-zinc-400">
-                        Deadlines
-                      </h2>
 
-                      <p className="text-sm text-zinc-500  ml-1 font-semibold tracking-wider flex gap-2 items-center ">
-                        No deadlines
-                      </p>
+                <div className="h-[1px] w-full bg-zinc-800/50" />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-zinc-300">
+                      <Calendar size={16} className="text-zinc-400" />
+                      <span>Deadlines</span>
                     </div>
+                    <div className="px-2 py-1 rounded text-xs bg-zinc-800 text-zinc-400">
+                      {meetingData.deadlines.length} {meetingData.deadlines.length === 1 ? 'deadline' : 'deadlines'}
+                    </div>
+                  </div>
+
+                  {meetingData.deadlines.length > 0 ? (
+                    <ul className="space-y-2">
+                      {meetingData.deadlines.map((deadline, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
+                        >
+                          <div className="h-1 w-1 rounded-full bg-zinc-700" />
+                          {deadline}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-zinc-500 italic">No deadlines set</p>
                   )}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto ">
-            <table className="min-w-full border border-zinc-800 bg-[#1c1c1cfc] divide-y divide-zinc-800  ">
-              <thead>
-                <tr>
-                  <th className="w-12 "></th>
-                  <th className="px-6 py-3 text-left font-medium text-zinc-400 uppercase tracking-wider max-w-md w-[45%]">
-                    Task
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-zinc-400 tracking-wider max-w-xs w-[25%]">
-                    Assignee
-                  </th>
-                  <th className="px-6 py-3 text-left font-medium text-zinc-400 tracking-wider max-w-xs w-[20%]">
-                    Deadline
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-[#1c1c1cfc] divide-y divide-zinc-800 w-full ">
+          <div className="mt-8">
+            <div className="bg-[#1c1c1c] rounded-xl overflow-hidden">
+              <div className="p-6 border-b border-zinc-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-zinc-300">
+                    <ClipboardList size={16} className="text-zinc-400" />
+                    <span>Tasks</span>
+                  </div>
+                  <div className="px-2 py-1 rounded text-xs bg-zinc-800 text-zinc-400">
+                    {meetingData.tasks.length} {meetingData.tasks.length === 1 ? 'task' : 'tasks'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="divide-y divide-zinc-800">
                 {meetingData.tasks.length > 0 ? (
                   meetingData.tasks.map((task, index) => (
-                    <tr
-                      key={index}
-                      className={
-                        index % 2 === 0
-                          ? "bg-[#1c1c1cfc] w-full"
-                          : "bg-[#1c1c1cfc] w-full"
-                      }
-                    >
-                      <td className="pl-4 py-4 whitespace-nowrap text-sm text-zinc-500 w-12">
-                        <span
+                    <div key={index} className="group p-4 hover:bg-zinc-800/30 transition-colors">
+                      <div className="flex items-start gap-4">
+                        <button
                           onClick={() => handleTaskToggle(task.id)}
-                          className={`border-zinc-700 rounded-[2px] border h-3 flex items-center w-3 cursor-pointer bg-[#242424fc] ${
-                            task.isCompleted ? "text-green-500" : ""
-                          }`}
+                          className={`mt-1 relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${task.isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-zinc-700/50 bg-zinc-800/30'}`}
                         >
-                          {task.isCompleted && "✓"}
-                        </span>
-                      </td>
-                      <td
-                        className={`px-6 py-4 whitespace-nowrap font-semibold max-w-3xl text-zinc-500 truncate`}
-                      >
-                        {task.task}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap max-w-xs  text-zinc-500 truncate">
-                        {task.assigned_to || "Unassigned"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap max-w-xs text-zinc-500 truncate">
-                        {task.deadline || "No deadline"}
-                      </td>
-                    </tr>
+                          <div className={`h-2 w-2 rounded-sm bg-green-500 transition-opacity ${task.isCompleted ? 'opacity-100' : 'opacity-0'}`} />
+                        </button>
+                        
+                        <div className="min-w-0 flex-1 space-y-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className={`text-sm font-medium ${task.isCompleted ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>
+                              {task.task}
+                            </p>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-xs">
+                            <div className="flex items-center gap-1.5">
+                              <UserCircle size={14} className="text-zinc-500" />
+                              <span className="text-zinc-400">{task.assigned_to || 'Unassigned'}</span>
+                            </div>
+                            
+                            {task.deadline && (
+                              <div className="flex items-center gap-1.5">
+                                <Calendar size={14} className="text-zinc-500" />
+                                <span className="text-zinc-400">{task.deadline}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ))
                 ) : (
-                  <tr className="w-full">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 w-12">
-                      <span className="border-zinc-700 rounded-[2px] border w-fit p-1.5 block bg-[#242424fc]" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-semibold max-w-3xl  text-zinc-500 truncate">
-                      No tasks
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap max-w-xs  text-zinc-500 truncate">
-                      Unassigned
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap max-w-xs text-zinc-500 truncate">
-                      No deadline
-                    </td>
-                  </tr>
+                  <div className="p-8 text-center">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-zinc-800/50 mb-4">
+                      <ClipboardList size={20} className="text-zinc-400" />
+                    </div>
+                    <p className="text-sm text-zinc-400">No tasks yet</p>
+                    <p className="text-xs text-zinc-500 mt-1">Tasks from the meeting will appear here</p>
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
@@ -343,7 +344,6 @@ const Page = () => {
         <Input
           placeholder="Ask me anything from this discussion!"
           needShadow
-          isGlobal={true}
         />
       </div>
       {deleteModal && (

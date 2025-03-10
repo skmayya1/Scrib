@@ -11,7 +11,7 @@ const MenuToggle = ({
 }: {
   meetingsId: string;
   meetingData: MeetingData;
-  setMeetingData: (data: MeetingData) => void;
+  setMeetingData: (data: MeetingData | null) => void;
   setMenuIsOpen: (isOpen: boolean) => void;
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -35,90 +35,94 @@ const MenuToggle = ({
 
   const handleSettingChange = async (setting: "isPublic" | "Editable") => {
     try {
+      // Get current settings
+      const currentSettings = { ...settings };
+      
+      // Calculate new values
+      if (setting === "isPublic") {
+        currentSettings.isPublic = !currentSettings.isPublic;
+        // If making private, ensure Editable is false
+        if (!currentSettings.isPublic) {
+          currentSettings.Editable = false;
+        }
+      } else {
+        currentSettings.Editable = !currentSettings.Editable;
+      }
+
       const response = await fetch(`/api/activity/${meetingsId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          isPublic: setting === "isPublic",
-          Editable: setting === "Editable",
+          isPublic: currentSettings.isPublic,
+          Editable: currentSettings.Editable
         }),
       });
 
       if (response.ok) {
-        setSettings((prev) => ({
-          ...prev,
-          [setting]: !prev[setting],
-        }));
+        // Update local state
+        setSettings(currentSettings);
+
+        // Update parent state
         setMeetingData({
           ...meetingData,
-          [setting]: !settings[setting],
+          isPublic: currentSettings.isPublic,
+          Editable: currentSettings.Editable
         });
+        setMenuIsOpen(false);
+
       }
     } catch (error) {
       console.error(`Failed to update ${setting}:`, error);
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`/api/activity/${meetingsId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setMeetingData(null);
-      }
-    } catch (error) {
-      console.error("Failed to delete meeting:", error);
-    }
-  };
 
   return (
     <div
       ref={menuRef}
-      className="absolute top-8 right-5 h-fit w-[180px] bg-[#19191a] border border-[#242425] rounded-lg flex flex-col items-start justify-center px-3 py-2 gap-1"
+      className="absolute top-8 right-0 w-[220px] bg-[#1c1c1c] border border-zinc-800/50 rounded-xl shadow-xl backdrop-blur-sm flex flex-col p-2 gap-1 animate-in fade-in slide-in-from-top-2 duration-200"
     >
-      <div className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-zinc-500 hover:bg-[#242425] rounded-lg w-full min-w-[150px]">
-        <input
-          type="checkbox"
-          id="public-checkbox"
-          checked={settings.isPublic}
-          onChange={() => handleSettingChange("isPublic")}
-          className="peer hidden"
-        />
-        <label
-          htmlFor="public-checkbox"
-          className="mr-2 h-3 w-3 rounded border border-zinc-700 bg-gray-500 peer-checked:bg-green-500"
-        />
-        <Globe size={12} color="gray" />
-        <span>Public access</span>
-      </div>
+      <button
+        onClick={() => handleSettingChange("isPublic")}
+        className="group flex items-center cursor-pointer gap-3 px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800/50 rounded-lg w-full transition-colors"
+      >
+        <div className="relative flex items-center">
+          <div className={`h-4 w-4 rounded border transition-colors ${settings.isPublic ? 'border-green-500/50 bg-green-500/10' : 'border-zinc-700 bg-zinc-800'}`} />
+          <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${settings.isPublic ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="h-2 w-2 rounded-sm bg-green-500" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-1">
+          <Globe size={15} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
+          <span className="group-hover:text-zinc-300 transition-colors">Public access</span>
+        </div>
+      </button>
 
-      <div className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-zinc-500 hover:bg-[#242425] rounded-lg w-full min-w-[150px]">
-        <input
-          type="checkbox"
-          id="editable-checkbox"
-          checked={settings.Editable}
-          onChange={() => handleSettingChange("Editable")}
-          disabled={!settings.isPublic}
-          className="peer hidden"
-        />
-        <label
-          htmlFor="editable-checkbox"
-          className={`mr-2 h-3 w-3 rounded border border-zinc-700 
-      peer-checked:bg-blue-500 peer-disabled:bg-zinc-700 bg-gray-500`}
-        />
-        <Edit2Icon size={12} color="gray" />
-        <span className={!settings.isPublic ? "text-zinc-600" : ""}>
-          Anyone can edit
-        </span>
-      </div>
+      <button
+        onClick={() => settings.isPublic && handleSettingChange("Editable")}
+        className={`group flex items-center gap-3 px-3 py-2 text-sm text-zinc-400 ${settings.isPublic ? 'hover:bg-zinc-800/50 cursor-pointer' : 'opacity-50 cursor-not-allowed'} rounded-lg w-full transition-colors`}
+      >
+        <div className="relative flex items-center">
+          <div className={`h-4 w-4 rounded border transition-colors ${settings.Editable && settings.isPublic ? 'border-blue-500/50 bg-blue-500/10' : !settings.isPublic ? 'bg-zinc-900 border-zinc-800' : 'border-zinc-700 bg-zinc-800'}`} />
+          <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${settings.Editable && settings.isPublic ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="h-2 w-2 rounded-sm bg-blue-500" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-1">
+          <Edit2Icon size={15} className={`${settings.isPublic ? 'text-zinc-500 group-hover:text-zinc-400' : 'text-zinc-700'} transition-colors`} />
+          <span className={`${settings.isPublic ? 'group-hover:text-zinc-300' : 'text-zinc-700'} transition-colors`}>
+            Anyone can edit
+          </span>
+        </div>
+      </button>
 
-      <button className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-zinc-500 hover:bg-[#242425] rounded-lg w-full min-w-[150px]">
-        <CircleHelp size={12} color="gray" />
-        Help
+      <div className="h-[1px] w-full bg-zinc-800/50 my-1" />
+      
+      <button className="group flex items-center gap-3 px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800/50 rounded-lg w-full transition-colors">
+        <CircleHelp size={15} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
+        <span className="group-hover:text-zinc-300 transition-colors">View Help Guide</span>
       </button>
 
       <button
@@ -126,10 +130,10 @@ const MenuToggle = ({
           setdeleteModal(!deleteModal);
           setMenuIsOpen(false);
         }}
-        className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-[#990000] hover:bg-[#99000035] rounded-lg w-full min-w-[150px]"
+        className="group flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg w-full transition-colors"
       >
-        <Trash size={12} color="#990000" />
-        Delete
+        <Trash size={15} className="group-hover:text-red-300 transition-colors" />
+        <span className="group-hover:text-red-300 transition-colors">Delete Meeting</span>
       </button>
     </div>
   );

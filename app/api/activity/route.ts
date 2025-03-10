@@ -24,8 +24,10 @@ export async function GET() {
           title: true,
           description: true,
           createdAt: true,
-          
         },
+        orderBy: {
+          createdAt: "desc",
+        }
       },
     },
   });
