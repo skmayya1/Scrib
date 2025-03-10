@@ -164,29 +164,29 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-8">
-              <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-2xl md:text-3xl font-bold text-white">
-                    {meetingData.title}
-                  </h1>
-                  {meetingData.createdAt && (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                      <Calendar size={14} />
-                      <time className="text-sm">{formatDate(meetingData.createdAt)}</time>
-                    </div>
-                  )}
-                </div>
-                {meetingData.description && (
-                  <p className="text-zinc-400 leading-relaxed">{meetingData.description}</p>
+          <div className="space-y-8">
+            <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+              <div className="space-y-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-zinc-300">
+                  {meetingData.title}
+                </h1>
+                {meetingData.createdAt && (
+                  <div className="flex items-center gap-2 text-zinc-400">
+                    <Calendar size={14} />
+                    <time className="text-sm">{formatDate(meetingData.createdAt)}</time>
+                  </div>
                 )}
               </div>
-              
+              {meetingData.description && (
+                <p className="text-zinc-400 leading-relaxed">{meetingData.description}</p>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {meetingData.keytakeaways.length > 0 && (
-                <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
-                  <div className="flex items-center gap-2 text-white">
-                    <NotebookPen size={18} />
+                <div className="md:col-span-2 bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-zinc-400">
+                    <NotebookPen size={18} color="gray"/>
                     <h2 className="text-lg font-semibold">Key Takeaways</h2>
                   </div>
                   <ul className="space-y-3">
@@ -204,9 +204,8 @@ const Page = () => {
                   </ul>
                 </div>
               )}
-            </div>
-            <div className="space-y-4">
-              <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-6">
+              <div className="md:col-span-1 space-y-4">
+                <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-6">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-zinc-400">
@@ -268,6 +267,7 @@ const Page = () => {
                     <p className="text-sm text-zinc-500 italic">No deadlines set</p>
                   )}
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -338,8 +338,8 @@ const Page = () => {
       ) : (
         <div className="MAXWIDTH">Loading...</div>
       )}
-      <div className="MAXWIDTH fixed bottom-0 right-0 left-0 flex flex-col items-center justify-center gap-2 ">
-        <div className="absolute w-full h-full bg-[#18181874] blur  z-0" />
+      <div className="MAXWIDTH fixed bottom-0 right-0 left-0 flex flex-col items-center justify-center gap-2">
+        <div className="absolute w-full h-full bg-[#18181874] blur z-0" />
         <Chat />
         <Input
           placeholder="Ask me anything from this discussion!"
