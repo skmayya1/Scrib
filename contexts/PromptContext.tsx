@@ -8,6 +8,8 @@ interface PromptContextType {
   message: string | null;
   data: string;
   prevPrompt: string;
+  deleteModal: boolean;
+  setdeleteModal: (deleteModal: boolean) => void;
   setshowChat: (showChat: boolean) => void;
   setPrompt: (prompt: string) => void;
   handlePromptSubmit: () => void;
@@ -22,6 +24,7 @@ export function PromptProvider({ children }: { children: ReactNode }) {
   const [showChat, setshowChat] = useState(false);
   const [Data, setData] = useState<string>("");
   const [prevPrompt, setprevPrompt] = useState('')
+  const [deleteModal, setdeleteModal] = useState(false)
 
   const { slug } = useParams();
 
@@ -53,6 +56,8 @@ export function PromptProvider({ children }: { children: ReactNode }) {
     handlePromptSubmit,
     showChat,
     setshowChat,
+    deleteModal,
+    setdeleteModal,
     loading,
     message,
     data: Data,

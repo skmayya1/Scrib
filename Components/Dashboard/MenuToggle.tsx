@@ -1,6 +1,7 @@
 import { MeetingData } from "@/app/dashboard/[slug]/page";
 import { CircleHelp, Trash, Globe, Edit2Icon } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
+import { usePrompt } from "@/contexts/PromptContext";
 
 const MenuToggle = ({
   meetingsId,
@@ -14,6 +15,7 @@ const MenuToggle = ({
   setMenuIsOpen: (isOpen: boolean) => void;
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { deleteModal, setdeleteModal } = usePrompt();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,6 +58,20 @@ const MenuToggle = ({
       }
     } catch (error) {
       console.error(`Failed to update ${setting}:`, error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/activity/${meetingsId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setMeetingData(null);
+      }
+    } catch (error) {
+      console.error("Failed to delete meeting:", error);
     }
   };
 
@@ -105,7 +121,13 @@ const MenuToggle = ({
         Help
       </button>
 
-      <button className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-[#990000] hover:bg-[#99000035] rounded-lg w-full min-w-[150px]">
+      <button
+        onClick={() => {
+          setdeleteModal(!deleteModal);
+          setMenuIsOpen(false);
+        }}
+        className="flex items-center cursor-pointer gap-2 px-1 pr-2 py-2 text-sm text-[#990000] hover:bg-[#99000035] rounded-lg w-full min-w-[150px]"
+      >
         <Trash size={12} color="#990000" />
         Delete
       </button>

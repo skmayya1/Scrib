@@ -1,5 +1,6 @@
 import prisma from "@/DB/prisma";
 import { auth } from "@/lib/auth";
+import { Award } from "lucide-react";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -97,6 +98,30 @@ export async function PUT(
     console.error("Error updating document visibility:", error);
     return NextResponse.json(
       { message: "Failed to update document visibility" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = await params; // Corrected destructuring
+  console.log(slug);
+
+  try {
+    await prisma.meetings.delete({
+      where: {
+        id: slug,
+      },
+    });
+
+    return NextResponse.json({ message: "Document deleted" }, { status: 200 });
+  } catch (error) {
+    console.log("Error deleting document:", error);
+    return NextResponse.json(
+      { message: "Failed to delete document" },
       { status: 500 }
     );
   }

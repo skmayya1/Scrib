@@ -9,7 +9,7 @@ const Chat = () => {
   return (
     <div
       className={`flex flex-col gap-1 cursor-pointer rounded-lg bg-[#242425] self-start  items-center justify-start text-sm shadow-md border border-zinc-700 shadow-zinc-800 text-zinc-400 transition-all  ease-in-out z-10
-     ${showChat ? "w-full h-fit max-h-[580px]" : " h-9 w-36"} ${
+     ${showChat ? "w-full min-h-[350px] h-fit max-h-[580px]" : " h-9 w-36"} ${
         data || loading ? "block" : "hidden"
       }
     `}
