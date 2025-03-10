@@ -22,6 +22,7 @@ import MenuToggle from "@/Components/Dashboard/MenuToggle";
 import Chat from "@/Components/Dashboard/Chat";
 import DeleteModal from "@/Components/Dashboard/DeleteModal";
 import { usePrompt } from "@/contexts/PromptContext";
+import { authClient } from "@/lib/auth-client";
 
 interface Task {
   task: string;
@@ -54,6 +55,12 @@ const Page = () => {
   const [copied, setCopied] = useState(false);
 
   const { deleteModal } = usePrompt();
+
+  const { data: session,isPending } = authClient.useSession();
+
+    if (!isPending && !session) {
+    router.push("/");
+  }
 
   useEffect(() => {
     const fetchMeetingData = async () => {

@@ -13,7 +13,7 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-white scroll-smooth">
       {/* Navigation */}
-      <nav className="px-3 md:px-6 py-3 md:py-4 border-b border-gray-200">
+      <nav className="px-3 md:px-6 py-3 md:py-4 border-b border-gray-200 fixed top-0 left-0 right-0 bg-white">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <span className="text-xl md:text-2xl font-bold text-gray-900">Scrib</span>
@@ -37,7 +37,7 @@ const Page = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:pt-48">
         <div className="text-center space-y-8">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight">
             Your AI Meeting Assistant

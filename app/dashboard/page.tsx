@@ -14,7 +14,7 @@ const Page = () => {
   const [extensionStatus, setExtensionStatus] = React.useState<ExtensionStatus>('idle');
 
   if (!isPending && !session) {
-    router.push("/auth/login");
+    router.push("/");
   }
 
   return (
