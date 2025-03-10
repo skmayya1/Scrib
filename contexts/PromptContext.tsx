@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface PromptContextType {
   prompt: string;
@@ -27,6 +27,16 @@ export function PromptProvider({ children }: { children: ReactNode }) {
   const [deleteModal, setdeleteModal] = useState(false)
 
   const { slug } = useParams();
+
+  useEffect(() => {
+    // Reset chat states when URL changes
+    setPrompt("");
+    setData("");
+    setMessage(null);
+    setshowChat(false);
+    setprevPrompt("");
+    setloading(false);
+  }, [slug]);
 
   const handlePromptSubmit = async () => {
     if (prompt.trim()) {
