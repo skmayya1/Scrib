@@ -17,7 +17,8 @@ export async function getAccessToken(): Promise<{
         }
     }
     const email = session?.user?.email;
-
+    console.log(email);
+    
 
     const data = await prisma.user.findUnique({
         where: {

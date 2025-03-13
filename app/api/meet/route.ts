@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { Expired, accessToken } = await getAccessToken();
 
+  console.log(Expired, accessToken);
+  
+
   console.log(req.headers.get("authorization"));
 
   // Check if request is from a browser extension
