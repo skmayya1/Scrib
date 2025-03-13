@@ -2,6 +2,7 @@
 import React from 'react';
 import { authClient } from "@/lib/auth-client";
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 const Page = () => {
   const { data: session, isPending } = authClient.useSession();
@@ -16,7 +17,7 @@ const Page = () => {
       <nav className="px-3 md:px-6 py-3 md:py-4 border-b border-gray-200 fixed top-0 left-0 right-0 bg-white">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span className="text-xl md:text-2xl font-bold text-gray-900">Scrib</span>
+            <Link href="/" className="text-xl md:text-2xl font-bold text-gray-900">Scrib</Link>
           </div>
           <div className="flex items-center">
             <div className="flex items-center space-x-2 md:space-x-6 mr-3 md:mr-6 text-sm md:text-base">
@@ -28,9 +29,9 @@ const Page = () => {
               </div>
             </div>
             {!isPending && !session ? (
-              <button className="px-3 md:px-4 py-2 text-sm md:text-base rounded-md bg-black text-white hover:bg-gray-800 transition-colors whitespace-nowrap">
+              <Link href="/auth/login" className="px-3 md:px-4 py-2 text-sm md:text-base rounded-md bg-black text-white hover:bg-gray-800 transition-colors whitespace-nowrap">
                 Get Started
-              </button>
+              </Link>
             ) : null}
           </div>
         </div>
@@ -51,9 +52,9 @@ const Page = () => {
             </div>
           ) : !session ? (
             <div className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 px-4">
-              <button className="px-6 md:px-8 py-3 md:py-4 rounded-lg bg-black text-white hover:bg-gray-800 transition-colors text-base md:text-lg font-medium">
+              <Link href="/auth/login" className="px-6 md:px-8 py-3 md:py-4 rounded-lg bg-black text-white hover:bg-gray-800 transition-colors text-base md:text-lg font-medium">
                 Try Scrib Free
-              </button>
+              </Link>
               <button className="px-6 md:px-8 py-3 md:py-4 rounded-lg border border-gray-200 text-gray-600 hover:border-gray-400 transition-colors text-base md:text-lg font-medium">
                 Watch Demo
               </button>
