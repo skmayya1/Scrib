@@ -34,40 +34,43 @@ export async function POST(req: NextRequest) {
 
     console.log("Meeting ID:", meetingId);
 
-    if (!meetingId || meetingId.trim() === "") {
+    const meetIdIsEmpty = !meetingId || meetingId.trim() == "";
+
+    let Meeting;
+
+    if (!meetIdIsEmpty) {
+     Meeting = await prisma.meet.findUnique({
+        where: { id: meetingId as string },
+        select: { chunk: true ,id:true},
+      });
+  
+      if (!Meeting) {
+        return NextResponse.json({ error: "Meeting not found" }, { status: 404 ,        headers: corsHeaders
+        });
+      }
+    }else{
       await prisma.meet.deleteMany();
-      const Meet = await prisma.meet.create({
+      Meeting = await prisma.meet.create({
         data: {
           id: crypto.randomUUID(),
           chunk: buffer,
           userId: token,
         },
       });
-      console.log("Meeting ID:", Meet.id);
-      return NextResponse.json({ meetingId: Meet.id }, { status: 200 });
+      console.log("Meeting ID:", Meeting.id);
     }
 
-    const existingMeeting = await prisma.meet.findUnique({
-      where: { id: meetingId as string },
-      select: { chunk: true },
-    });
-
-    if (!existingMeeting) {
-      return NextResponse.json({ error: "Meeting not found" }, { status: 404 ,        headers: corsHeaders
-      });
-    }
-
-    const updatedBuffer = Buffer.concat([existingMeeting.chunk, buffer]);
+    const updatedBuffer = Buffer.concat([Meeting.chunk, buffer]);
 
     console.log("iscopmleted", isCompleted);
 
     if (isCompleted && updatedBuffer.length > 0) {
       const deletedData = await prisma.meet.delete({
-        where: { id: meetingId as string },
+        where: { id: meetIdIsEmpty ? Meeting.id : meetingId as string },
       });
       console.log("isCompleted - creating new meeting", isCompleted);
 
-      if (deletedData && deletedData.id === meetingId) {
+      if (deletedData && deletedData.id === (meetIdIsEmpty ? Meeting.id : meetingId as string)) {
         const newMeeting = await prisma.meetings.create({
           data: {
             Audio: updatedBuffer,
@@ -83,12 +86,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,        headers: corsHeaders
       });
     }
+
     await prisma.meet.update({
-      where: { id: meetingId as string },
+      where: { id: meetIdIsEmpty ? Meeting.id : meetingId as string },
       data: { chunk: updatedBuffer },
     });
 
-    return NextResponse.json({ meetingId }, { status: 200 ,        headers: corsHeaders
+    return NextResponse.json({ meetingId: meetIdIsEmpty ? Meeting.id : meetingId as string, isCompleted }, { status: 200 ,        headers: corsHeaders
     });
   } catch (error) {
     console.error("Upload error:", error);

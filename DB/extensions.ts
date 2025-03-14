@@ -32,7 +32,10 @@ interface Task {
 
 const client = new AssemblyAI({
   apiKey: process.env.ASSEMBLYAI_API_KEY as string,
+
 });
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000
 
 const system_instruction = `You are an AI assistant processing a meeting transcript. Here is a transcript of a meeting. Extract key takeaways, tasks (with assigned persons, if specified),Also give an title for the meeting and a small decription containing the topic discussed it sshoul be less then two lines, and deadlines. Return only a valid JSON object without markdown formatting or extra text with the following structure:
 
@@ -110,13 +113,37 @@ async function getText(meeting: MeetingsProps) {
 }
 
 async function audioToText(audio: Buffer) {
-  console.log("Transcribing audio...", audio);
+  console.log("Transcribing audio...", audio.length, "bytes");
+  
+  const MAX_RETRIES = 3;
+  const DELAY_SECONDS = 5;
+  
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      console.log(`Transcription attempt ${attempt + 1}/${MAX_RETRIES}`);
+      
+      const transcript = await client.transcripts.transcribe({
+        audio: audio,
+      });
+      
+      console.log("Transcription successful");
+      return transcript.text;
+      
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, 
+        error instanceof Error ? error.message : String(error));
+      
+      if (attempt + 1 < MAX_RETRIES) {
+        console.log(`Retrying in ${DELAY_SECONDS} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, DELAY_SECONDS * 1000));
+      } else {
+        console.error("Max retries reached. Transcription failed.");
+        throw error;
+      }
+    }
+  }
 
-  const transcript = await client.transcripts.transcribe({
-    audio: audio,
-  });
-  console.log("Transcript:", transcript.text);
-  return transcript.text;
+  throw new Error("Transcription failed after maximum retries");
 }
 
  async function geminiAi(text: string): Promise<MeetingSummary> {
