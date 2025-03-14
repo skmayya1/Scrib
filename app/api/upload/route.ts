@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const file = data.get("file") as Blob | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 ,        headers: corsHeaders
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 , headers: corsHeaders
       });
     }
 

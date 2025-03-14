@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 
 
-  if(trials === 5) {
+  if(trials === 0) {
     return NextResponse.json({ error: "No trials left" }, { status: 403 });
   }
   
