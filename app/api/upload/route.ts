@@ -10,6 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': 'chrome-extension://imehigbjghjofmefgjakipphedmmbgcn',
+      'Access-Control-Allow-Credentials': 'true'
+    };
+
     // Extract the token
     const token = authHeader.split(" ")[1];
 
@@ -17,7 +22,8 @@ export async function POST(req: NextRequest) {
     const file = data.get("file") as Blob | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 ,        headers: corsHeaders
+      });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -47,7 +53,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!existingMeeting) {
-      return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
+      return NextResponse.json({ error: "Meeting not found" }, { status: 404 ,        headers: corsHeaders
+      });
     }
 
     const updatedBuffer = Buffer.concat([existingMeeting.chunk, buffer]);
@@ -69,22 +76,39 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json(
           { meetingId: newMeeting.id, isCompleted },
-          { status: 200 }
+          { status: 200 ,        headers: corsHeaders
+          }
         );
       }
-      return NextResponse.json({ meetingId, isCompleted }, { status: 200 });
+      return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,        headers: corsHeaders
+      });
     }
     await prisma.meet.update({
       where: { id: meetingId as string },
       data: { chunk: updatedBuffer },
     });
 
-    return NextResponse.json({ meetingId }, { status: 200 });
+    return NextResponse.json({ meetingId }, { status: 200 ,        headers: corsHeaders
+    });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 , headers: {
+        'Access-Control-Allow-Origin': 'chrome-extension://imehigbjghjofmefgjakipphedmmbgcn',
+        'Access-Control-Allow-Credentials': 'true'
+      }}
     );
   }
+}
+export async function OPTIONS(req: NextRequest) {
+  // Handle preflight request
+  return new NextResponse(null, {
+    headers: {
+      'Access-Control-Allow-Origin': 'chrome-extension://imehigbjghjofmefgjakipphedmmbgcn',
+      'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
+      'Access-Control-Allow-Credentials': 'true',
+    },
+  });
 }

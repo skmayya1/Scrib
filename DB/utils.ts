@@ -10,6 +10,7 @@ export async function getAccessToken(): Promise<{
     const session = await auth.api.getSession({
         headers: await headers()
     });
+    
     if (!session) { 
         return {
             accessToken: '',
