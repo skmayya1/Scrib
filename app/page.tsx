@@ -80,9 +80,9 @@ const Page = () => {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Hero and Demo Section */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 py-24">
+        <div className="flex flex-col lg:flex-row items-start gap-12 py-36">
           {/* Hero Section */}
-          <div className="flex-1 py-8">
+          <div className="flex-1 py-">
             <div className="max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full mb-6">
                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
@@ -115,7 +115,7 @@ const Page = () => {
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
-                  <div className="text-sm font-medium text-gray-600">Chat Demo</div>
+                  <div className="text-sm font-medium text-gray-600">Product team weekly meeting</div>
                 </div>
                 <div className="flex items-center gap-2 text-gray-400">
                   <Share className="h-4 w-4" />

@@ -15,7 +15,7 @@ datasource db {
 }
 
 
-model User {
+model user {
   id            String     @id @default(cuid())
   name          String
   email         String
@@ -27,7 +27,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   meetings      Meetings[]
-
+  trials        Int  @default(5)
   @@unique([email])
   @@map("user")
 }
@@ -41,7 +41,7 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
@@ -52,7 +52,7 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -81,7 +81,7 @@ model Meet {
   id        String    @id @default(cuid())
   chunk     Bytes
   userId    String    @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime? @default(now()) // Default to current timestamp
   updatedAt DateTime? @default(now())
 
@@ -100,7 +100,7 @@ model Meetings {
   isPublic     Boolean   @default(false)
   Editable     Boolean   @default(false)
   userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime? @default(now()) // Default to current timestamp
   updatedAt    DateTime? @default(now())
 }

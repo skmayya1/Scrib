@@ -5,7 +5,8 @@ import { headers } from "next/headers";
 
 export async function getAccessToken(): Promise<{
     accessToken: string ,
-    Expired:boolean
+    Expired:boolean,
+    trials: number
 }> {
     const session = await auth.api.getSession({
         headers: await headers()
@@ -14,7 +15,8 @@ export async function getAccessToken(): Promise<{
     if (!session) { 
         return {
             accessToken: '',
-            Expired: true
+            Expired: true,
+            trials: 0
         }
     }
     const email = session?.user?.email;
@@ -27,6 +29,7 @@ export async function getAccessToken(): Promise<{
         },
         select: {
            id: true,
+           trials: true
         }
     })
     
@@ -35,6 +38,7 @@ export async function getAccessToken(): Promise<{
     }
     return {
         accessToken: data.id,
-        Expired: false
+        Expired: false,
+        trials: data.trials
     }
 }

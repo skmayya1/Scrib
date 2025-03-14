@@ -3,7 +3,7 @@ import Section from "@/Components/Dashboard/Section";
 import Navbar from "@/Components/Navbar";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { History, ExternalLink } from 'lucide-react';
 
 type ExtensionStatus = 'not_installed' | 'idle' | 'recording';
@@ -12,9 +12,14 @@ const Page = () => {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
   const [extensionStatus, setExtensionStatus] = React.useState<ExtensionStatus>('idle');
+  const [trialCount, setTrialCount] = React.useState(0);
 
   if (!isPending && !session) {
     router.push("/");
+  }
+
+  const setTrialCountMethod = async (count: number) =>{
+    setTrialCount(count);
   }
 
   return (
@@ -27,7 +32,7 @@ const Page = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Welcome back{session?.user?.name ? `, ${session.user.name}` : null}</h1>
               <p className="text-zinc-400 text-sm md:text-base">Here&apos;s what&apos;s happening with your meetings</p>
               <div className="mt-2 text-sm text-emerald-500">
-                <span className="font-medium">4 meets left</span> in your free trial • <span className="underline cursor-pointer">Upgrade now</span>
+                <span className="font-medium">{5 - trialCount} meets left</span> in your free trial • <span className="underline cursor-pointer">Upgrade now</span>
               </div>
             </div>
             <div className="mt-4 space-y-2 text-sm text-zinc-400">
@@ -54,7 +59,7 @@ const Page = () => {
             <span className="text-sm font-medium tracking-wide">Recent Meetings</span>
           </div>
         </div>
-        <Section />
+        <Section setTrialCountMethod={setTrialCountMethod} />
       </div>
     </div>
   );

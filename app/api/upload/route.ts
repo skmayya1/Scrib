@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     // Extract the token
     const token = authHeader.split(" ")[1];
 
+
     const data = await req.formData();
     const file = data.get("file") as Blob | null;
 
@@ -77,6 +78,17 @@ export async function POST(req: NextRequest) {
             userId: token,
           },
         });
+        if(newMeeting){
+          await prisma.user.update({
+            where:{
+              id: token
+            },
+            data:{
+              trials: {
+                decrement: 1}
+            }
+          });
+        }
         return NextResponse.json(
           { meetingId: newMeeting.id, isCompleted },
           { status: 200 ,        headers: corsHeaders
