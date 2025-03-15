@@ -6,7 +6,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const { slug } = await params; // Extract slug from params
+  const { slug } = params; // Directly extract slug from params
   const { prompt } = await req.json();
 
   try {
