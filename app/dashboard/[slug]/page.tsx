@@ -53,22 +53,29 @@ const Page = () => {
   const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { deleteModal } = usePrompt();
 
-  const { data: session,isPending } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
-    if (!isPending && !session) {
+  if (!isPending && !session) {
     router.push("/");
   }
 
   useEffect(() => {
     const fetchMeetingData = async () => {
       if (slug) {
-        console.log("slug", slug);
-        const response = await fetch(`/api/activity/${slug}`);
-        const data: MeetingData = await response.json();
-        setMeetingData(data);
+        setIsLoading(true);
+        try {
+          const response = await fetch(`/api/activity/${slug}`);
+          const data: MeetingData = await response.json();
+          setMeetingData(data);
+        } catch (error) {
+          console.error("Error fetching meeting data:", error);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -128,7 +135,44 @@ const Page = () => {
     <div className="bg-[#191818] min-h-screen flex flex-col w-full pb-32 relative">
       <Navbar />
 
-      {meetingData ? (
+      {isLoading ? (
+        <div className="max-w-7xl mx-auto px-4 md:px-6 w-full py-6">
+          <div className="flex w-full items-center justify-between mb-6">
+            <div className="h-9 w-32 bg-zinc-800/30 rounded-lg animate-pulse" />
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-[130px] bg-zinc-800/30 rounded-lg animate-pulse" />
+              <div className="h-9 w-9 bg-zinc-800/30 rounded-lg animate-pulse" />
+            </div>
+          </div>
+          <div className="space-y-8">
+            <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+              <div className="space-y-2">
+                <div className="h-8 w-2/3 bg-zinc-800/30 rounded-lg animate-pulse" />
+                <div className="h-5 w-36 bg-zinc-800/30 rounded-lg animate-pulse" />
+              </div>
+              <div className="h-20 w-full bg-zinc-800/30 rounded-lg animate-pulse" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="md:col-span-2 bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+                <div className="h-6 w-40 bg-zinc-800/30 rounded-lg animate-pulse" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-6 w-full bg-zinc-800/30 rounded-lg animate-pulse" />
+                  ))}
+                </div>
+              </div>
+              <div className="bg-[#1c1c1c] rounded-xl p-6 space-y-4">
+                <div className="h-6 w-32 bg-zinc-800/30 rounded-lg animate-pulse" />
+                <div className="space-y-3">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="h-12 w-full bg-zinc-800/30 rounded-lg animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : meetingData ? (
         <div className="max-w-7xl mx-auto px-4 md:px-6 w-full py-6">
           <div className="flex w-full items-center justify-between mb-6">
             <button
