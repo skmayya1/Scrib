@@ -4,9 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  context: { params: { slug: string } }
 ) {
-  const { slug } = await params;
+  const { slug } = context.params;
   const { prompt } = await req.json();
 
   try {

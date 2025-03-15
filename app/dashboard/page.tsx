@@ -3,15 +3,13 @@ import Section from "@/Components/Dashboard/Section";
 import Navbar from "@/Components/Navbar";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { History, ExternalLink } from 'lucide-react';
+import React from "react";
+import { History } from 'lucide-react';
 
-type ExtensionStatus = 'not_installed' | 'idle' | 'recording';
 
 const Page = () => {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
-  const [extensionStatus, setExtensionStatus] = React.useState<ExtensionStatus>('idle');
   const [trialCount, setTrialCount] = React.useState(0);
 
   if (!isPending && !session) {

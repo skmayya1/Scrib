@@ -4,12 +4,9 @@ import { useRouter } from 'next/navigation';
 import { authClient } from "@/lib/auth-client";
 import Link from 'next/link';
 import {
-  NotebookPen,
-  ClipboardList,
   Globe,
   Share,
   UserCircle,
-  ChevronRight,
   Lock,
   CircleDot
 } from 'lucide-react';
@@ -136,7 +133,7 @@ const Page = () => {
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">AI</div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm text-gray-900">Welcome! I'm your AI meeting assistant. I'll help you capture and summarize your meetings. Would you like to see a demo?</p>
+                    <p className="text-sm text-gray-900">Welcome! I&apos;m your AI meeting assistant. I&apos;ll help you capture and summarize your meetings. Would you like to see a demo?</p>
                   </div>
                 </div>
 
@@ -150,11 +147,11 @@ const Page = () => {
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">AI</div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm text-gray-900">Great! Here's a quick overview:</p>
+                    <p className="text-sm text-gray-900">Great! Here&apos;s a quick overview:</p>
                     <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                      <p className="text-sm text-gray-600">• Start your meeting and I'll listen in</p>
-                      <p className="text-sm text-gray-600">• I'll transcribe everything in real-time</p>
-                      <p className="text-sm text-gray-600">• After the meeting, I'll provide a summary with key points</p>
+                      <p className="text-sm text-gray-600">• Start your meeting and I&apos;ll listen in</p>
+                      <p className="text-sm text-gray-600">• I&apos;ll transcribe everything in real-time</p>
+                      <p className="text-sm text-gray-600">• After the meeting, I&apos;ll provide a summary with key points</p>
                       <p className="text-sm text-gray-600">• You can ask questions about any part of the meeting</p>
                     </div>
                   </div>

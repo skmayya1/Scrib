@@ -1,4 +1,3 @@
-import prisma from "@/DB/prisma";
 import { getAccessToken } from "@/DB/utils";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {

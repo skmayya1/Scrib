@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-export async function OPTIONS(req: NextRequest) {
+export async function OPTIONS() {
   // Handle preflight request
   return new NextResponse(null, {
     headers: {

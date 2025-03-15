@@ -1,6 +1,5 @@
 import prisma from "@/DB/prisma";
 import { auth } from "@/lib/auth";
-import { Award } from "lucide-react";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
