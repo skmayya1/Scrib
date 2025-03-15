@@ -76,7 +76,7 @@ const Page = () => {
               )}
                       {!session && (
             <button
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/auth/login')}
               className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 rounded-lg hover:bg-zinc-800 transition-colors duration-200"
             >
               Get Started
