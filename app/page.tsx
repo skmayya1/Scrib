@@ -53,9 +53,7 @@ const Page = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {isPending ? (
-                <div className="h-8 w-20 bg-gray-100 rounded-lg animate-pulse"></div>
-              ) : session ? (
+              {session ? (
                 <Link
                   href="/dashboard"
                   className="px-4 py-1.5 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
@@ -71,7 +69,7 @@ const Page = () => {
                 </button>
                 
               )}
-                      {!session && (
+                {!session && (
             <button
               onClick={() => router.push('/auth/login')}
               className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 rounded-lg hover:bg-zinc-800 transition-colors duration-200"
