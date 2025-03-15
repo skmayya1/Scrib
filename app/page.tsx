@@ -84,9 +84,9 @@ const Page = () => {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Hero and Demo Section */}
-        <div className="flex flex-col lg:flex-row items-start gap-12 py-36">
+        <div className="flex flex-col lg:flex-row items-start gap-12 py-16 md:py-30">
           {/* Hero Section */}
-          <div className="flex-1 py-">
+          <div className="flex-1">
             <div className="max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full mb-6">
                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
