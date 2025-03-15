@@ -2,14 +2,12 @@ import prisma from "@/DB/prisma";
 import { chatWithAi } from "@/gemini/utils";
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = {
-  slug: string;
-}
+
 export async function POST(
   req: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params; // Directly extract slug from params
+  const { slug } = await params; // Directly extract slug from params
   const { prompt } = await req.json();
 
   try {
