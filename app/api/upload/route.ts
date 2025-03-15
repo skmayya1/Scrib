@@ -71,19 +71,27 @@ export async function POST(req: NextRequest) {
       });
       console.log("isCompleted - creating new meeting", isCompleted);
 
-      if (deletedData && deletedData.id === (meetIdIsEmpty ? Meeting.id : meetingId as string)) {
-        const newMeeting = await prisma.meetings.create({
-          data: {
-            Audio: updatedBuffer,
-            userId: token,
-          },
-        });
-        return NextResponse.json(
-          { meetingId: newMeeting.id, isCompleted },
-          { status: 200 ,        headers: corsHeaders
-          }
-        );
-      }
+     if (deletedData && deletedData.id === (meetIdIsEmpty ? Meeting.id : (meetingId as string))) {
+  res.status(202).json({ message: "Processing in background", isCompleted });
+
+  // Run database creation in background
+  setTimeout(async () => {
+    try {
+      const newMeeting = await prisma.meetings.create({
+        data: {
+          Audio: updatedBuffer,
+          userId: token,
+        },
+      });
+      console.log("Meeting created:", newMeeting.id);
+    } catch (error) {
+      console.error("Background meeting creation failed:", error);
+    }
+  }, 0);
+
+  return;
+}
+
       return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,        headers: corsHeaders
       });
     }
