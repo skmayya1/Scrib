@@ -116,13 +116,6 @@ const PreferencesModal = ({ isOpen, onClose }: PreferencesModalProps) => {
                 </button>
               </div>
             </div>
-            <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-zinc-400 hover:text-zinc-300 bg-zinc-800/50 hover:bg-zinc-800 rounded-lg transition-colors">
-              <div className="flex items-center gap-2">
-                <Shield size={16} />
-                <span>Change password</span>
-              </div>
-              <ChevronRight size={16} />
-            </button>
           </div>
         </div>
       )
@@ -131,7 +124,7 @@ const PreferencesModal = ({ isOpen, onClose }: PreferencesModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-zinc-900 rounded-xl w-full max-w-2xl h-[600px] flex overflow-hidden border border-zinc-800/50">
+      <div className="bg-zinc-900 rounded-xl w-full max-w-2xl h-[400px] flex overflow-hidden border border-zinc-800/50">
         {/* Sidebar */}
         <div className="w-48 border-r border-zinc-800 p-2">
           {Object.entries(sections).map(([key, section]) => {
@@ -235,7 +228,7 @@ const Navbar = () => {
                           authClient.signOut({
                             fetchOptions: {
                               onSuccess: () => {
-                                router.push("/login"); // redirect to login page
+                                router.push("/"); 
                               },
                             },
                           });
