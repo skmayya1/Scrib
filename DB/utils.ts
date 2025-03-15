@@ -29,7 +29,11 @@ export async function getAccessToken(): Promise<{
         },
         select: {
            id: true,
-           trials: true
+            _count:{
+                select:{
+                    meetings: true
+                }
+            }
         }
     })
     
@@ -39,6 +43,6 @@ export async function getAccessToken(): Promise<{
     return {
         accessToken: data.id,
         Expired: false,
-        trials: data.trials
+        trials: data._count.meetings
     }
 }

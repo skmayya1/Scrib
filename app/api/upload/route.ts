@@ -78,17 +78,6 @@ export async function POST(req: NextRequest) {
             userId: token,
           },
         });
-        if(newMeeting){
-          await prisma.user.update({
-            where:{
-              id: token
-            },
-            data:{
-              trials: {
-                decrement: 1}
-            }
-          });
-        }
         return NextResponse.json(
           { meetingId: newMeeting.id, isCompleted },
           { status: 200 ,        headers: corsHeaders

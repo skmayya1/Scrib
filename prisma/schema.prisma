@@ -27,7 +27,6 @@ model user {
   sessions      Session[]
   accounts      Account[]
   meetings      Meetings[]
-  trials        Int  @default(5)
   @@unique([email])
   @@map("user")
 }
