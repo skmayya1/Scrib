@@ -17,7 +17,7 @@ interface Activity {
   createdAt: string;
 }
 
-export function formatDate(timestamp: string) {
+export function formatDate(timestamp: string | Date) {
   const date = new Date(timestamp);
 
   if (isToday(date)) {
