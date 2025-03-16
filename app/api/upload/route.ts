@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      MeetingTask.trigger({
+      await MeetingTask.trigger({
         id:newMeeting.id
       })
 
