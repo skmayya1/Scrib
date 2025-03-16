@@ -89,7 +89,7 @@ model Meet {
 
 model Meetings {
   id           String    @id @default(cuid())
-  Audio        Bytes
+  Audio        Bytes?
   Text         String?
   title        String?
   description  String?

@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { MeetingsExtension } from "./extensions";
  
-const prisma = new PrismaClient().$extends(MeetingsExtension);
+const prisma = new PrismaClient();
 
 export default prisma;

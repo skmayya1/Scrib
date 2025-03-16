@@ -1,4 +1,5 @@
 import prisma from "@/DB/prisma";
+import { MeetingTask } from "@/trigger/meetings";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -70,34 +71,31 @@ export async function POST(req: NextRequest) {
         where: { id: meetIdIsEmpty ? Meeting.id : meetingId as string },
       });
       console.log("isCompleted - creating new meeting", isCompleted);
-
+       
+      //queue background task
       if (deletedData && deletedData.id === (meetIdIsEmpty ? Meeting.id : (meetingId as string))) {
         // Send response immediately
-        const response = NextResponse.json(
+        const newMeeting = await prisma.meetings.create({
+          data: {
+            Audio: updatedBuffer,
+            userId: token,
+          },
+        });
+
+        const trigger = await MeetingTask.trigger({
+          id:newMeeting.id
+        })
+
+        console.log("Meeting created:", newMeeting.id);
+        return  NextResponse.json(
           { message: "Meeting creation is processing in background", isCompleted },
           { status: 202, headers: corsHeaders }
         );
       
-        // Run database creation in background safely
-        queueMicrotask(async () => {
-          try {
-            const newMeeting = await prisma.meetings.create({
-              data: {
-                Audio: updatedBuffer,
-                userId: token,
-              },
-            });
-            console.log("Meeting created:", newMeeting.id);
-          } catch (error) {
-            console.error("Background meeting creation failed:", error);
-          }
-        });
-      
-        return response;
       }
 
 
-      return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,        headers: corsHeaders
+      return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,headers: corsHeaders
       });
     }
 
