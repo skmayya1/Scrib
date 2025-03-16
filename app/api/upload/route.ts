@@ -79,9 +79,11 @@ export async function POST(req: NextRequest) {
         },
       });
 
-       MeetingTask.trigger({
-        id:newMeeting.id
+      console.log("About to trigger background job");
+      MeetingTask.trigger({
+        id: newMeeting.id
       })
+      console.log("Background job triggered");
 
       
       console.log("Meeting created:", newMeeting.id);
