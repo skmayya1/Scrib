@@ -85,6 +85,8 @@ export async function POST(req: NextRequest) {
         const trigger = await MeetingTask.trigger({
           id:newMeeting.id
         })
+        console.log(trigger);
+        
 
         console.log("Meeting created:", newMeeting.id);
         return  NextResponse.json(
