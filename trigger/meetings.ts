@@ -77,6 +77,7 @@ export const MeetingTask = task({
             id:payload.id
         },select:{
             Audio:true,
+            userId:true
         }
       })
 
@@ -116,6 +117,12 @@ export const MeetingTask = task({
                 deadline: task.deadline
               }))
             }
+        }
+      })
+
+      await prisma.meet.deleteMany({
+        where:{
+          userId:data.userId
         }
       })
 

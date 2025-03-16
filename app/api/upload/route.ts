@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
         });
       }
     }else{
-      await prisma.meet.deleteMany();
       Meeting = await prisma.meet.create({
         data: {
           id: crypto.randomUUID(),
@@ -67,38 +66,25 @@ export async function POST(req: NextRequest) {
     console.log("iscopmleted", isCompleted);
 
     if (isCompleted && updatedBuffer.length > 0) {
-      const deletedData = await prisma.meet.delete({
-        where: { id: meetIdIsEmpty ? Meeting.id : meetingId as string },
-      });
       console.log("isCompleted - creating new meeting", isCompleted);
-       
-      //queue background task
-      if (deletedData && deletedData.id === (meetIdIsEmpty ? Meeting.id : (meetingId as string))) {
-        // Send response immediately
-        const newMeeting = await prisma.meetings.create({
-          data: {
-            Audio: updatedBuffer,
-            userId: token,
-          },
-        });
 
-        const trigger = await MeetingTask.trigger({
-          id:newMeeting.id
-        })
-        console.log(trigger);
-        
-
-        console.log("Meeting created:", newMeeting.id);
-        return  NextResponse.json(
-          { message: "Meeting creation is processing in background", isCompleted },
-          { status: 202, headers: corsHeaders }
-        );
-      
-      }
-
-
-      return NextResponse.json({ meetingId, isCompleted }, { status: 200 ,headers: corsHeaders
+      const newMeeting = await prisma.meetings.create({
+        data: {
+          Audio: updatedBuffer,
+          userId: token,
+        },
       });
+
+      const trigger = await MeetingTask.trigger({
+        id:newMeeting.id
+      })
+      console.log(trigger);
+      
+      console.log("Meeting created:", newMeeting.id);
+      return  NextResponse.json(
+        { message: "Meeting creation is processing in background", isCompleted },
+        { status: 202, headers: corsHeaders }
+      );
     }
 
     await prisma.meet.update({
