@@ -2,6 +2,8 @@ import prisma from "@/DB/prisma";
 import { MeetingTask } from "@/trigger/meetings";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     // Get Authorization header
