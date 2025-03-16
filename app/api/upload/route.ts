@@ -52,7 +52,9 @@ export async function POST(req: NextRequest) {
       }
     }else{
       console.log(token);
-      
+      await prisma.meet.deleteMany({
+        where: { userId: token },
+      });
       Meeting = await prisma.meet.create({
         data: {
           id: crypto.randomUUID(),
