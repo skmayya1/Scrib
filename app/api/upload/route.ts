@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
         existingBuffer = await readFile(Meeting.chunkPath);
       }
     } catch (error) {
+      console.log(error);
       console.log("No existing chunk found or error reading chunk");
     }
 
