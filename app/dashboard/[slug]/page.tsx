@@ -182,10 +182,10 @@ const Page = () => {
               <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
               <span>Back to Dashboard</span>
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ">
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-400 hover:text-zinc-300 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-all duration-200 group w-[130px]"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-400 hover:text-zinc-300 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-all duration-200 group w-[140px]"
               >
                 <Share size={15} className="text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0" />
                 <span className="relative w-full">
