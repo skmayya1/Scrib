@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400, headers: corsHeaders });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     console.log("File size:", buffer.length);
 
     const meetingId = data.get("meetingId") as string | null;
@@ -66,13 +67,11 @@ export async function POST(req: NextRequest) {
           id: newId,
           chunkPath: chunkPath,
           userId: token,
-          
         },
       });
       console.log("Meeting ID:", Meeting.id);
     }
 
-    // Read existing chunk if it exists
     let existingBuffer = Buffer.alloc(0);
     try {
       if (Meeting.chunkPath) {
@@ -85,8 +84,7 @@ export async function POST(req: NextRequest) {
 
     const updatedBuffer = Buffer.concat([existingBuffer, buffer]);
 
-    // Write the combined buffer to file
-    if(!isCompleted) {
+    if (!isCompleted) {
       await writeFile(Meeting.chunkPath, updatedBuffer);
     }
     
@@ -97,13 +95,12 @@ export async function POST(req: NextRequest) {
 
       const newMeeting = await prisma.meetings.create({
         data: {
-          Audio: updatedBuffer,
+          Audio: updatedBuffer as Buffer,
           userId: token,
         },
       });
 
       console.log("newMeeting", newMeeting.Audio?.length);
-      
 
       console.log("About to trigger background job");
       await MeetingTask.trigger({
@@ -111,7 +108,7 @@ export async function POST(req: NextRequest) {
       });
       console.log("Background job triggered");
 
-      // Clean up the temporary chunk file and local file
+      // Clean up the temporary chunk file
       try {
         await prisma.meet.delete({
           where: { id: Meeting.id }
