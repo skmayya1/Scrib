@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
     let existingBuffer = Buffer.alloc(0);
     try {
       if (Meeting.chunkPath) {
-        existingBuffer = await readFile(Meeting.chunkPath);
+        const fileBuffer = await readFile(Meeting.chunkPath);
+        existingBuffer = Buffer.from(fileBuffer);
       }
     } catch (error) {
       console.log(error);
