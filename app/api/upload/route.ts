@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       });
 
       console.log("About to trigger background job");
-      MeetingTask.trigger({
+     await MeetingTask.trigger({
         id: newMeeting.id
       })
       console.log("Background job triggered");
