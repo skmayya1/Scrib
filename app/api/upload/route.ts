@@ -1,12 +1,16 @@
 import prisma from "@/DB/prisma";
 import { MeetingTask } from "@/trigger/meetings";
 import { NextRequest, NextResponse } from "next/server";
+import { writeFile, readFile, unlink } from 'fs/promises';
+import path from 'path';
+import crypto from 'crypto';
 
 export const maxDuration = 60;
 
+const STORAGE_DIR = path.join(process.cwd(), 'storage', 'audio-chunks');
+
 export async function POST(req: NextRequest) {
   try {
-    // Get Authorization header
     const authHeader = req.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -18,56 +22,70 @@ export async function POST(req: NextRequest) {
       'Access-Control-Allow-Credentials': 'true'
     };
 
-    // Extract the token
     const token = authHeader.split(" ")[1];
-
 
     const data = await req.formData();
     const file = data.get("file") as Blob | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 , headers: corsHeaders
-      });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400, headers: corsHeaders });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     console.log("File size:", buffer.length);
 
     const meetingId = data.get("meetingId") as string | null;
-    const isCompleted = data.get("isCompleted") === "true"; // Ensure boolean conversion
+    const isCompleted = data.get("isCompleted") === "true";
 
     console.log("Meeting ID:", meetingId);
 
-    const meetIdIsEmpty = !meetingId || meetingId.trim() == "";
+    const meetIdIsEmpty = !meetingId || meetingId.trim() === "";
 
     let Meeting;
 
     if (!meetIdIsEmpty) {
-     Meeting = await prisma.meet.findUnique({
+      Meeting = await prisma.meet.findUnique({
         where: { id: meetingId as string },
-        select: { chunk: true ,id:true},
+        select: { chunkPath: true, id: true },
       });
-  
+
       if (!Meeting) {
-        return NextResponse.json({ error: "Meeting not found" }, { status: 404 ,        headers: corsHeaders
-        });
+        return NextResponse.json({ error: "Meeting not found" }, { status: 404, headers: corsHeaders });
       }
-    }else{
+    } else {
       console.log(token);
       await prisma.meet.deleteMany({
         where: { userId: token },
       });
+      
+      const newId = crypto.randomUUID();
+      const chunkPath = path.join(STORAGE_DIR, `${newId}.raw`);
+      
       Meeting = await prisma.meet.create({
         data: {
-          id: crypto.randomUUID(),
-          chunk: buffer,
+          id: newId,
+          chunkPath: chunkPath,
           userId: token,
+          
         },
       });
       console.log("Meeting ID:", Meeting.id);
     }
 
-    const updatedBuffer = Buffer.concat([Meeting.chunk, buffer]);
+    // Read existing chunk if it exists
+    let existingBuffer = Buffer.alloc(0);
+    try {
+      if (Meeting.chunkPath) {
+        existingBuffer = await readFile(Meeting.chunkPath);
+      }
+    } catch (error) {
+      console.log("No existing chunk found or error reading chunk");
+    }
+
+    const updatedBuffer = Buffer.concat([existingBuffer, buffer]);
+
+    // Write the combined buffer to file
+    !isCompleted && await writeFile(Meeting.chunkPath, updatedBuffer);
 
     console.log("iscopmleted", isCompleted);
 
@@ -81,40 +99,50 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      console.log("newMeeting", newMeeting.Audio?.length);
+      
+
       console.log("About to trigger background job");
-     await MeetingTask.trigger({
+      await MeetingTask.trigger({
         id: newMeeting.id
-      })
+      });
       console.log("Background job triggered");
 
-      
+      // Clean up the temporary chunk file and local file
+      try {
+        await prisma.meet.delete({
+          where: { id: Meeting.id }
+        });
+        // Delete the local audio file
+        await unlink(Meeting.chunkPath);
+      } catch (error) {
+        console.error("Error cleaning up temporary meeting:", error);
+      }
+
       console.log("Meeting created:", newMeeting.id);
-      return  NextResponse.json(
+      return NextResponse.json(
         { message: "Meeting creation is processing in background", isCompleted },
         { status: 202, headers: corsHeaders }
       );
     }
 
-    await prisma.meet.update({
-      where: { id: meetIdIsEmpty ? Meeting.id : meetingId as string },
-      data: { chunk: updatedBuffer },
-    });
-
-    return NextResponse.json({ meetingId: meetIdIsEmpty ? Meeting.id : meetingId as string, isCompleted }, { status: 200 ,        headers: corsHeaders
-    });
+    return NextResponse.json(
+      { meetingId: meetIdIsEmpty ? Meeting.id : meetingId as string, isCompleted },
+      { status: 200, headers: corsHeaders }
+    );
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 , headers: {
+      { status: 500, headers: {
         'Access-Control-Allow-Origin': 'chrome-extension://imehigbjghjofmefgjakipphedmmbgcn',
         'Access-Control-Allow-Credentials': 'true'
       }}
     );
   }
 }
+
 export async function OPTIONS() {
-  // Handle preflight request
   return new NextResponse(null, {
     headers: {
       'Access-Control-Allow-Origin': 'chrome-extension://imehigbjghjofmefgjakipphedmmbgcn',
