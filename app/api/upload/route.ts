@@ -86,8 +86,10 @@ export async function POST(req: NextRequest) {
     const updatedBuffer = Buffer.concat([existingBuffer, buffer]);
 
     // Write the combined buffer to file
-    !isCompleted && await writeFile(Meeting.chunkPath, updatedBuffer);
-
+    if(!isCompleted) {
+      await writeFile(Meeting.chunkPath, updatedBuffer);
+    }
+    
     console.log("iscopmleted", isCompleted);
 
     if (isCompleted && updatedBuffer.length > 0) {
