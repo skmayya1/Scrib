@@ -78,7 +78,7 @@ model Verification {
 
 model Meet {
   id        String    @id @default(cuid())
-  chunkPath String    // Path to the audio chunk file
+  chunk     Bytes
   userId    String    @unique
   user      user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime? @default(now()) // Default to current timestamp
