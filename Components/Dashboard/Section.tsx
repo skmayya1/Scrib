@@ -8,7 +8,8 @@ import {
   isTomorrow,
 } from "date-fns";
 import { useRouter } from "next/navigation";
-import { History } from 'lucide-react';
+import { History, Plus, Mic } from 'lucide-react';
+import { useRecording } from "@/contexts/RecordingContext";
 
 interface Activity {
   id: string;
@@ -34,7 +35,8 @@ export function formatDate(timestamp: string | Date) {
 }
 
 const Section = ({setTrialCountMethod}: {setTrialCountMethod: (count: number) => void}) => {
-  const router = useRouter()
+  const router = useRouter();
+  const { isRecording } = useRecording();
   const [Data, setData] = useState<Activity[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,9 +44,9 @@ const Section = ({setTrialCountMethod}: {setTrialCountMethod: (count: number) =>
     const FetchData = async () => {
       try {
         const response = await axios.get("/api/activity");
-        const { data, messsage } = response.data;
+        const { data, message } = response.data;
         console.log(data);
-        console.log(messsage);
+        console.log(message);
         setData(data);
         setTrialCountMethod(data.length);
       } catch (error) {
@@ -126,6 +128,35 @@ const Section = ({setTrialCountMethod}: {setTrialCountMethod: (count: number) =>
               </div>
             </div>
           ))}
+          {Data && Data.length < 5 && (
+            <div
+              onClick={() => router.push('/record')}
+              className="bg-[#242425] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:bg-[#2a2a2b] hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 border border-dashed border-zinc-700/50"
+            >
+              <div className="p-5 h-full flex flex-col items-center justify-center min-h-[200px] gap-4">
+                <div className="w-12 h-12 rounded-full bg-zinc-800/50 flex items-center justify-center">
+                  {isRecording ? (
+                    <div className="relative">
+                      <Mic className="w-6 h-6 text-red-400" />
+                      <div className="absolute inset-0 w-full h-full rounded-full bg-red-500/20 animate-ping" />
+                    </div>
+                  ) : (
+                    <Plus className="w-6 h-6 text-zinc-400" />
+                  )}
+                </div>
+                <div className="text-center">
+                  <h2 className="text-lg text-zinc-300 font-medium mb-1">
+                    {isRecording ? "Recording..." : "New Meeting"}
+                  </h2>
+                  {!isRecording && (
+                    <p className="text-sm text-zinc-500">
+                      {5 - Data.length} trial {5 - Data.length === 1 ? 'meeting' : 'meetings'} left
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
