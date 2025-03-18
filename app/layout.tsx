@@ -3,6 +3,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PromptProvider } from "@/contexts/PromptContext";
+import { RecordingProvider } from "@/contexts/RecordingContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased custom-scrollbar`}
       >
-        <PromptProvider>{children}</PromptProvider>
+        <PromptProvider>
+          <RecordingProvider>
+            {children}
+          </RecordingProvider>
+        </PromptProvider>
       </body>
     </html>
   );
