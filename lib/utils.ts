@@ -1,21 +1,12 @@
-import ffmpeg from "fluent-ffmpeg";
-import { Readable } from "stream";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
-export async function getAudioDuration(buffer: Buffer): Promise<number> {
-return new Promise((resolve, reject) => {
-  const stream = new Readable();
-  stream.push(buffer);
-  stream.push(null);
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
-  ffmpeg(stream)
-    .format("wav") 
-    .ffprobe((err, metadata) => {
-      if (err) {
-        reject(err);
-      } else {
-        const duration = metadata.format.duration ?? 0;
-        resolve(duration);
-      }
-    });
-});
+export function formatTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
